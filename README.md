@@ -1,6 +1,6 @@
-Scene~Draft🄯 is an extensible framework used to translate a list of parametric shape
+Scene\~Draft🄯 is an extensible framework used to translate a list of parametric shape
 descriptions into files that define three-dimensional scenes. The formats of these files are
-based on indexed-face-sets of triangles. The goal of Scene~Draft🄯 is to allow users to draw 
+based on indexed-face-sets of triangles. The goal of Scene\~Draft🄯 is to allow users to draw 
 figures in 3D with as little overhead and non-accumulating knowledge as possible. 
 
 Scene~Draft🄯 reads a scene description file and generates indexed face sets for each 
