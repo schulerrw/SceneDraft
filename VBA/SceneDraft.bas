@@ -24,6 +24,7 @@ Attribute VB_Name = "SceneDraft"
   '        =  7 Hemisphere                       =  6 cyan
   '        =  8 Extrusion                        =  7 purple
   '                                              =  8 magenta
+  '                                              =  9 white
   '                                              = 10 forrest green
 '''
 
@@ -91,8 +92,8 @@ Dim objColor As Integer
   '''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
   '  full path to 3dmodel.model  temporary file
   theTempFile = "b:\3dmodel.model"
-  theOBJfile = "b:\ggg.obj"
-  theSceneFile = "b:\scene.csv"
+  theOBJfile = "b:\letters.obj"
+  theSceneFile = "b:\SceneDescription_LettersBlock.csv"
   '  use SUBST B: <your path> at the cmd prompt--see the help for SUBST
   '''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
 

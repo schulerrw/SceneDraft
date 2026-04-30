@@ -8,6 +8,7 @@ import sphere                                                      #
 import hemisphere                                                  #
 import extrusion                                                   #
 #      transform3d                                                 #
+import sys                                                         #
 ####################################################################
 """
 Scene~Draft a framework for rendering 3D scenes
@@ -25,11 +26,12 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """
-
 #####  User Input ######### File Name and Path #####################
-ScenePath = 'b:\\'          #<----------- User Edit or Action in OS# 
+ScenePath = '.\\'           #<----------- User Edit or Action in OS# 
 SceneFamilyName = 'scene'   #<----------- User Edit                # 
 #                                                                  #
+if len(sys.argv) > 1:
+    SceneFamilyName = sys.argv[1]
 ##### computed file paths from User Input                          #
 theSceneFile = ScenePath + SceneFamilyName + '.csv'                #
 filePathOutput = ScenePath + SceneFamilyName + '.obj'              #
@@ -81,10 +83,16 @@ if __name__ == "__main__":
     
     #1### Load the File  ###########################################
     ################################################################  
-    with open(theSceneFile, "r") as file:
-        content = file.read()  # read whole file into content
-        scene = content.split('\n')  #  split into lines
-
+    try:
+        with open(theSceneFile, "r") as file:
+            content = file.read()  # read whole file into content
+            scene = content.split('\n')  #  split into lines
+    except Exception:
+        print(f'pyhthon s:\SceneDraft.py "familyName"')
+        print(f'        to execute from the prompt in the directory with')
+        print(f'        familyName.csv')
+        print(f'\n I cannot find {theSceneFile}')
+        sys.exit()
     #2### Parse the Header #########################################
     ################################################################
     ''' get Delimiter from first line.
