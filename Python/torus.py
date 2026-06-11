@@ -169,17 +169,17 @@ class torus:
         for i in self.verts:
             print(f' [{i[0]}, {i[1]}, {i[2]}]')
     
-    def verticies(self, cableIt=False):
+    def vertices(self, cableIt=False):
         '''
-        Class is initialized. No need to store verticies as local/self
-        Compute and return a list of 0-indexed verticies. Caller is
+        Class is initialized. No need to store vertices as local/self
+        Compute and return a list of 0-indexed vertices. Caller is
         responsible for keeping track of global offset.
         '''
         return self.verts
     
     def faces(self, cableIt = False):
         '''
-        Class is initialized. No need to store face verticies as local/self
+        Class is initialized. No need to store face vertices as local/self
         Compute and return a list of 0-indexed faces. Caller is
         responsible for keeping track of global offset to first vertex and
         next face
@@ -223,7 +223,7 @@ if __name__ == "__main__":
     print("torus")
     E = torus([4,0,0,0,0,1,1,0,1,5], .3, 6)
     E.describe()
-    print("VERTICIES:")
-    print(E.verticies())
+    print("vertices:")
+    print(E.vertices())
     print("FACES:")
     print(E.faces())

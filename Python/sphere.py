@@ -78,8 +78,8 @@ class sphere:
     '''
     def vertices(self):
         '''
-        Class is initialized. No need to store verticies as local/self
-        Compute and return a list of 0-indexed verticies. Caller is
+        Class is initialized. No need to store vertices as local/self
+        Compute and return a list of 0-indexed vertices. Caller is
         responsible for keeping track of global offset.
         '''
         verts = []
@@ -102,7 +102,7 @@ class sphere:
   
     def faces(self):
         '''
-        Class is initialized. No need to store face verticies as local/self
+        Class is initialized. No need to store face vertices as local/self
         Compute and return a list of 0-indexed faces. Caller is
         responsible for keeping track of global offset to first vertex and
         next face
@@ -131,5 +131,5 @@ if __name__ == "__main__":
     print("sphere")
     E = sphere([2,0,1,0,0,1],0,0)
     E.describe()
-    print(E.verticies())
+    print(E.vertices())
     print(E.faces())

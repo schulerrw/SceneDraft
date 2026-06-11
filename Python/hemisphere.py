@@ -78,10 +78,10 @@ class hemisphere:
         print(f'         R1 = {self.BaseRadius} and N = {self.Steps} latitudes')
         print(f'         globalRadius = {self.globalRadius}  and  globalSteps = {self.globalSteps}')
     
-    def verticies(self):
+    def vertices(self):
         '''
-        Class is initialized. No need to store verticies as local/self
-        Compute and return a list of 0-indexed verticies. Caller is
+        Class is initialized. No need to store vertices as local/self
+        Compute and return a list of 0-indexed vertices. Caller is
         responsible for keeping track of global offset.
         '''
 
@@ -173,7 +173,7 @@ class hemisphere:
     
     def faces(self):
         '''
-        Class is initialized. No need to store face verticies as local/self
+        Class is initialized. No need to store face vertices as local/self
         Compute and return a list of 0-indexed faces. Caller is
         responsible for keeping track of global offset to first vertex and
         next face
@@ -226,5 +226,5 @@ if __name__ == "__main__":
     myLine = [5, 0, 0,0,0, 0,0,1,1,10]
     H = hemisphere(myLine, 0.3, 6)
     H.describe()
-    verts = H.verticies()
+    verts = H.vertices()
     fac = H.faces()
