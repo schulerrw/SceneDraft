@@ -78,7 +78,7 @@ class arc:
             self.Sx = float(line[8])
             self.Sy = float(line[9])
             self.Sz = float(line[10])
-            self.phi= float(line[11])
+            self.alpha= float(line[11])
             self.n1 = int(line[12])
         except Exception:
             print(f"Error parsing {line} in arc.__init__()")
@@ -88,7 +88,7 @@ class arc:
             self.Sy = self.Sz = 0
             self.Ax = self.Ay = 0
             self.Az = 1
-            self.phi = 90
+            self.alpha = 90
             self.n1 = 6
         try:
             self.r2 = float(line[13])
@@ -152,9 +152,9 @@ class arc:
         '''
         sweep trace to feed to cable.
         '''
-        theta = 360 / self.n1
+        theta = self.alpha / self.n1
         T = transform3d.transform3d(self.Cx, self.Cy, self.Cz, self.Ax, self.Ay, self.Az, theta)
-        for i in range(1, self.n1):
+        for i in range(self.n1):
             for j in self.profile:
                 [j[0] , j[1], j[2]] = T.rotate(j[0], j[1], j[2])
                 self.verts.append([j[0] , j[1], j[2]])
@@ -162,7 +162,7 @@ class arc:
         '''
         Center of last profile
         '''
-        T = transform3d.transform3d(self.Cx, self.Cy, self.Cz, self.Ax, self.Ay, self.Az, self.phi)
+        T = transform3d.transform3d(self.Cx, self.Cy, self.Cz, self.Ax, self.Ay, self.Az, theta)
         [xx, yy, zz] = T.rotate(self.Sx, self.Sy, self.Sz)
         self.verts.append([xx, yy, zz])
         self.Ex = xx
@@ -201,10 +201,10 @@ class arc:
         faces = []
         # '2n + 2 vertices per cylinder
         N = int(self.globalSteps)
-        if self.n1 > 0:
-            N = self.n1   
+        if self.n2 > 0:
+            N = self.n2   
         
-        m = N + 1
+        m = self.n1
         print(f'in faces, there are {m} profiles to connect')
         
         # first end cap
@@ -213,7 +213,7 @@ class arc:
             faces.append([i, i+1, 0])
 
         # faces between profiles
-        for j in range(0, m-1):
+        for j in range(m):
             v1 = j*N+N
             v2 = (j+1)*N + N
             v3 = j*N + 1
@@ -221,7 +221,7 @@ class arc:
             faces.append([v1, v2, v3])
             faces.append([v2, v4, v3])
 
-            for i in range(1, N):
+            for i in range(1, self.n2):
                 v1 = j*N + i
                 v2 = (j+1)*N + i
                 v3 = v2+1
@@ -230,7 +230,7 @@ class arc:
                 faces.append([v4, v1, v3])
 
         # last end cap
-        for i in range(N, 1, -1):
+        for i in range(self.n2, 1, -1):
             v1 = (m - 1)*N + i
             v2 = v1 - 1
             v3 = m * N + 1
