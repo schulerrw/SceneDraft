@@ -1,0 +1,70 @@
+newmtl m0000   # black
+Ka 0.6 0.6 0.6    # Ambient color
+Kd 0.0 0.0 0.0    # Diffuse color
+Ks 0.0 0.0 0.0    # Specular color
+Ns 88             # Shininess
+d  0.9            # Dissolve (transparency)
+
+newmtl m0001   # red
+Ka 0.6 0.6 0.6    # Ambient color
+Kd 1.0 0.0 0.0    # Diffuse color
+Ks 1.0 0.0 0.0    # Specular color
+Ns  888            # Shininess
+d  1.0            # Dissolve (transparency)
+# map_Kd texture.jpg  # Diffuse texture map
+
+newmtl m0002   # green
+Ka 0.6 0.6 0.6    # Ambient color
+Kd 0.0 1.0 0.0    # Diffuse color
+Ks 0.0 1.0 0.0    # Specular color
+Ns  888            # Shininess
+d  1.0            # Dissolve (transparency)
+
+newmtl m0003      # blue
+Ka 0.6 0.6 0.6    # Ambient color
+Kd 0.0 0.0 1.0    # Diffuse color
+Ks 0.0 0.0 1.0    # Specular color
+Ns  888            # Shininess
+d  1.0            # Dissolve (transparency)
+
+newmtl m0004      # orange
+Ka 0.6 0.6 0.6    # Ambient color
+Kd 1.0 0.5 0.0    # Diffuse color
+Ks 1.0 0.5 0.0    # Specular color
+Ns  888            # Shininess
+d  1.0            # Dissolve (transparency)
+
+newmtl m0005      # yellow
+Ka 0.6 0.6 0.6    # Ambient color
+Kd 1.0 1.0 0.0    # Diffuse color
+Ks 1.0 1.0 0.0    # Specular color
+Ns  888            # Shininess
+d  1.0            # Dissolve (transparency)
+
+newmtl m0006      # cyan
+Ka 0.6 0.6 0.6    # Ambient color
+Kd 0.0 1.0 1.0    # Diffuse color
+Ks 0.0 1.0 1.0    # Specular color
+Ns  888            # Shininess
+d  1.0            # Dissolve (transparency)
+
+newmtl m0007      # purple
+Ka 0.6 0.6 0.6    # Ambient color
+Kd 0.5 0.0 1.0    # Diffuse color
+Ks 0.5 0.0 1.0    # Specular color
+Ns  888            # Shininess
+d  1.0            # Dissolve (transparency)
+
+newmtl m0008      # magenta
+Ka 0.6 0.6 0.6    # Ambient color
+Kd 1.0 0.0 1.0    # Diffuse color
+Ks 1.0 0.0 1.0    # Specular color
+Ns  888            # Shininess
+d  1.0            # Dissolve (transparency)
+
+newmtl m0010   # forest green
+Ka 0.6 0.6 0.6    # Ambient color
+Kd 0.425 0.707 0.332    # Diffuse color
+Ks 0.425 0.707 0.332    # Specular color
+Ns 88             # Shininess
+d  1.0            # Dissolve (transparency)

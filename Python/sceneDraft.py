@@ -27,15 +27,17 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """
 #####  User Input ######### File Name and Path #####################
-ScenePath = '.\\'           #<----------- User Edit or Action in OS# 
+ScenePath = 'b:\\'          #<----------- User Edit or Action in OS# 
 SceneFamilyName = 'scene'   #<----------- User Edit                # 
 #                                                                  #
-if len(sys.argv) > 1:
-    SceneFamilyName = sys.argv[1]
+if len(sys.argv) > 1:                                              #
+    SceneFamilyName = sys.argv[1]                                  #
 ##### computed file paths from User Input                          #
 theSceneFile = ScenePath + SceneFamilyName + '.csv'                #
 filePathOutput = ScenePath + SceneFamilyName + '.obj'              #
 materialFileName = './'+SceneFamilyName + '.mtl'                   #
+if len(sys.argv) > 2:                                              #
+    materialFileName = './scenedraft.mtl'                          #
 # Code puts <family>.obj file in same directory as <family>.csv    #
 # User puts <family>.mtl file in same directory as <family>.obj    # <-+
 ####################################################################   |

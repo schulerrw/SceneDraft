@@ -92,8 +92,8 @@ Dim objColor As Integer
   '''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
   '  full path to 3dmodel.model  temporary file
   theTempFile = "b:\3dmodel.model"
-  theOBJfile = "b:\letters.obj"
-  theSceneFile = "b:\SceneDescription_LettersBlock.csv"
+  theOBJfile = "b:\scene.obj"
+  theSceneFile = "b:\scene.csv"
   '  use SUBST B: <your path> at the cmd prompt--see the help for SUBST
   '''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
 
@@ -920,7 +920,7 @@ Sub myArcC(B() As String)
   N2 = global_steps
   If Len(B(12)) > 0 Then
     N1 = Trim(B(12)) + 0# ' optional overide of N, number of steps
-    Debug.Print "overide N1"
+    Debug.Print "overide N1 = " & N1
   End If
   If PPPL > 12 Then
      If Len(B(13)) > 0 Then

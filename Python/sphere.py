@@ -76,7 +76,7 @@ class sphere:
     '  PP(x,y,z) are the points--scale these to desired radius; then add offset
     '  FF(1,2,3) are the three indexes defining the triangular face in counterclockwise orientation
     '''
-    def verticies(self):
+    def vertices(self):
         '''
         Class is initialized. No need to store verticies as local/self
         Compute and return a list of 0-indexed verticies. Caller is
