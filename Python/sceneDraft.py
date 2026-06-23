@@ -189,15 +189,16 @@ if __name__ == "__main__":
 
     #5### Write objects into file ##################################
     ################################################################
-    for E in entityList:  # for each Entity
+    for i,E in enumerate(entityList):  # for each Entity
         E.describe()
-        fout.write(f'\nusemtl m{E.color:04d}\n')
+        fout.write(f'\no ent_{i:06d}\n')
         V = E.vertices()  
         F = E.faces()       #RWS write these with offset
         fOffset = globalVertCount + 1
         for vv in V:  # write each vertex
             fout.write(f'v {vv[0]} {vv[1]} {vv[2]}   #{globalVertCount}\n')
             globalVertCount += 1
+        fout.write(f's 0\nusemtl m{E.color:04d}\n')
         for ff in F:  # write each face
             fout.write(f'f {ff[0]+fOffset} {ff[1]+fOffset} {ff[2]+fOffset}\n')
             globalFaceCount += 1
