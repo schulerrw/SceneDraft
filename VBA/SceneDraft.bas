@@ -327,11 +327,10 @@ Sub writeOBJobject(Optional colorID As Integer = 0)
   maxVertex = vNext
   maxFace = fNext
   'Debug.Print ("In writeOBJobject " & maxVertex & "vertices and faces = " & maxFace)
-
-  'objOffset = objOffset + 1
-  
-  WaveFront(wNext) = "usemtl m" & Format(colorID, "0000")
+  WaveFront(wNext) = "o ent_" & format(objOffset, "000000"))
   wNext = wNext + 1
+  objOffset = objOffset + 1
+
   For i = 0 To maxVertex - 1
     VV = Trim(Vertices(i))
     SS = Split(VV, " ")
@@ -344,6 +343,10 @@ Sub writeOBJobject(Optional colorID As Integer = 0)
     WaveFront(wNext) = myStr
     wNext = wNext + 1
   Next i
+    WaveFront(wNext) = "S 0"
+  wNext = wNext + 1
+  WaveFront(wNext) = "usemtl m" & Format(colorID, "0000")
+  wNext = wNext + 1
   For i = 0 To maxFace - 1
     FF = Trim(Faces(i))
     'Debug.Print FF
