@@ -223,7 +223,7 @@ class hemisphere:
 
 if __name__ == "__main__":
     print("hemisphere")
-    myLine = [5, 0, 0,0,0, 0,0,1,1,10]
+    myLine = [7, 0, 0,0,0, 0,0,1,1,10]
     H = hemisphere(myLine, 0.3, 6)
     H.describe()
     verts = H.vertices()
