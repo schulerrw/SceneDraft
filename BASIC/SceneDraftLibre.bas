@@ -1332,11 +1332,13 @@ Sub mySphere80(B() As String)
 
 End Sub
 
+
 Sub myHemisphere(B() As String)
 ' 5 | Color | Cx | Cy | Cz | Px | Py | Pz | Radius | Steps
   Dim Cx, Cy, Cz As Double ' center point
   Dim ax, ay, az As Double ' direction=axis of rotation
   Dim R1, N1, R2, N2 As Double 'Radii and Steps
+  Dim theta, phi as Double
   PPPL = UBound(B)  ' How many optional parameters are set? Subscript out of range errors otherwise
   Cx = CDbl(Trim(B(2)))
   Cy = CDbl(Trim(B(3)))
@@ -1359,28 +1361,26 @@ Sub myHemisphere(B() As String)
      ' Debug.Print "overide N"
     End If
    End If
-  'm = Sheets("Cyl").Cells(2, 11) 'number of cylinders
-  ' ttt = sqrt(-1)
+
     Dim xx(30) As Double
     Dim yy(30) As Double  ' dimension must match n
     Dim zz(30) As Double
     
     Dim myXX, myYY, myZZ As Double
-    Dim aa, bb, cc As Double
+    Dim aa, bb, bc As Double
     Dim rx, ry, rz As Double
     Dim myLen As Double
   
   vNext = 0
   fNext = 0
   
-  'For j = 2 To m + 1
- ' j = m
+
        
       
  ''' computer vector Head - Tail from base to Pole     
-      a = ax - Cx
+      aa = ax - Cx
       bb = ay - Cy
-      c = az - Cz
+      cc = az - Cz
       'd = a * xC1 + b * yC1 + c * zC1
       
  ''' save center of first profile at index zero
@@ -1388,16 +1388,16 @@ Sub myHemisphere(B() As String)
     vNext = vNext + 1
       
 ''' get direction to point on first profile
-           If Abs(a) < 0.000001 And Abs(bb) < 0.000001 Then
-              rx = 0
-              ry = c
-              rz = -1 * bb
+           If Abs(aa) < 0.000001 And Abs(bb) < 0.000001 Then
+              rx = 0.0
+              ry = cc
+              rz = -1.0 * bb
             Else
               rx = bb
-              ry = -1 * a
-              rz = 0
+              ry = -1.0 * aa
+              rz = 0.0
             End If
-     
+
      ''' normalize to unit length
         LLL = Sqr(rx*rx + ry*ry + rz*rz)
         rx = rx/LLL
@@ -1406,12 +1406,13 @@ Sub myHemisphere(B() As String)
         
      ''' normalize to unit length
      ''' vector from base center to pole
-        LLL = Sqr(a*a + bb*bb + c*c)
-        a = a/LLL
+        LLL = Sqr(aa*aa + bb*bb + cc*cc)
+        aa = aa/LLL
         bb = bb/LLL
-        c = cc/LLL
+        cc = cc/LLL
       
       phi = pi/(2*stepsLat)
+      theta = 360.0/N2
       
       ''' set first point on fist profile
         xx(0) = Cx + rx * R1
@@ -1421,7 +1422,7 @@ Sub myHemisphere(B() As String)
         vNext = vNext + 1
         
         ''' generate rest of points on first profile
-        Call initRotate(Cx, Cy, Cz, a, bb, c, theta)
+        Call initRotate(Cx, Cy, Cz, aa, bb, cc, theta)
         For i = 1 To N2 - 1
             myXX = xx(i - 1)
             myYY = yy(i - 1)
@@ -1435,25 +1436,19 @@ Sub myHemisphere(B() As String)
         Next i    
         
       
-      'domeRadius = Sqr(a * a + bb * bb + c * c)
-      'dx = a / stepsLat
-      'dy = bb / stepsLat
-      'dz = c / stepsLat
-      'dLatLen = domeRadius / stepsLat
-      'theta = 360 / N2
     '''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
-    For myLat = 2 To stepsLat - 2
+    For myLat = 2 To stepsLat - 1
       R = R1*cos((myLat-1)*phi)  ' jReduce each lattitude radius
-      x2 = Cx + a *sin((myLat-1)*phi)
-      y2 = Cy + bb*sin((myLat-1)*phi)
-      z2 = Cz + c *sin((myLat-1)*phi)
+      x2 = Cx + aa *sin((myLat-1)*phi)
+      y2 = Cy + bb *sin((myLat-1)*phi)
+      z2 = Cz + cc *sin((myLat-1)*phi)
       xx(0) = x2 + rx*R
       yy(0) = y2 + ry*R
       zz(0) = z2 + rz*R
       Vertices(vNext) = xx(0) & " " & yy(0) & " " & zz(0)
       vNext = vNext + 1
       ''' rotation stays the same: same axis same angle  
-      For i = 1 To N2 - 1
+      For i = 1 To N2 -1
             myXX = xx(i - 1)
             myYY = yy(i - 1)
             myZZ = zz(i - 1)
@@ -1464,15 +1459,14 @@ Sub myHemisphere(B() As String)
             Vertices(vNext) = xx(i) & " " & yy(i) & " " & zz(i)
             vNext = vNext + 1
       Next i    
-     ''' save pole at index @n+1
-     Vertices(vNext) = ax & " " & ay & " " & az
-     vNext = vNext + 1
     Next myLat
-     ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
-    
+    ''' save pole at index 2n+1
+    Vertices(vNext) = ax & " " & ay & " " & az
+    vNext = vNext + 1   
 
    
 
+     ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
   '
     'Equitorial base
      v1 = N2
@@ -1488,45 +1482,48 @@ Sub myHemisphere(B() As String)
        fNext = fNext + 1
      Next i
   
-  For j = 0 To stepsLat - 2 '''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
-      'Sheets("Faces").Cells(faceCount, 6) = "last"
-   
-      For i = 0 To N2 - 1
-        v0 = 1 + i + j * N2
-        v1 = 1 + i + (j + 1) * N2
-        v2 = v0 + 1
-        v3 = v1 + 1
+  For j = 0 To stepsLat - 3 '''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+        v0 = j*N2+N2
+        v1 = (j + 1) * N2 + N2
+        v2 = j*N2+1
+        v3 = (j + 1)*N2 + 1
         Faces(fNext) = v0 & " " & v1 & " " & v2
         fNext = fNext + 1
         Faces(fNext) = v1 & " " & v3 & " " & v2
         fNext = fNext + 1
-      Next i
-      v0 = v2
-      v1 = v3 - 1
-      v2 = j * N2 + 1
-      v3 = (j + 1) * N2
-      faceCount = faceCount + 1
-      
+
+      For i = 1 To N2 - 1
+        v0 = j*N2 + i
+        v1 = (j + 1) * N2 + i
+        v2 = v1 + 1
+        v3 = v0 + 1
         Faces(fNext) = v0 & " " & v1 & " " & v2
         fNext = fNext + 1
-        Faces(fNext) = v1 & " " & v3 & " " & v2
+        Faces(fNext) = v3 & " " & v0 & " " & v2
         fNext = fNext + 1
+       Next i
       
   Next j ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
   'Polar region
     
-    v0 = vNext - 1
-    For i = 0 To N2 - 1
-      v1 = vNext - N2 - 1 + i
-      v2 = v1 + 1
-      Faces(fNext) = v0 & " " & v1 & " " & v2
+    v3 = vNext - 1
+    For i = N2 to 2 step -1
+      v1 = (stepsLat -1)*(N2-1) + i +1
+      v2 = v1 - 1
+      Faces(fNext) = v1 & " " & v2 & " " & v3
       fNext = fNext + 1
     Next i
-    v1 = v2 - 1
-    v2 = vNext - N2 - 1
-    Faces(fNext) = v0 & " " & v1 & " " & v2
+    v1 = v2
+    v2 = v3 - 1
+    Faces(fNext) = v1 & " " & v2 & " " & v3
+    fNext = fNext + 1
 
 End Sub
+
+sub doit
+ call Main
+end sub
+
 Sub myExtrusion(B() As String)
   'R = Sheets("Scene").Cells(2, 9) ' Radius of hemisphere base
   'N = Sheets("Scene").Cells(m, 6) ' number of polygon vertices

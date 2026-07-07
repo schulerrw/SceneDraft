@@ -118,7 +118,6 @@ class hemisphere:
             ry = -1 * a
             rz = 0
 
-    
         ''' normalize to unit length'''
         myLen = math.sqrt(rx * rx + ry * ry + rz * rz)
         rx = rx / myLen
@@ -134,7 +133,7 @@ class hemisphere:
         c = c / myLen
 
         phi = math.pi/(2*self.Steps)
-        print(phi)
+        # print(phi)
 
         
 
@@ -155,7 +154,7 @@ class hemisphere:
             R = self.BaseRadius*math.cos((j-1)*phi) # reduce each lattitude radius
             ''' set first point on 2nd profile'''
             x2 = self.Cx + a*math.sin((j-1)*phi)
-            y2 = self.Cy+ b*math.sin((j-1)*phi)
+            y2 = self.Cy + b*math.sin((j-1)*phi)
             z2 = self.Cz + c*math.sin((j-1)*phi)
             xx = x2 + rx * R
             yy = y2 + ry * R
