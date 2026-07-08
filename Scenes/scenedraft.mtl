@@ -1,0 +1,20 @@
+newmtl m0000
+Kd 0.0 0.0 0.0    # black
+newmtl m0001
+Kd 1.0 0.0 0.0    # red
+newmtl m0002
+Kd 0.0 1.0 0.0    # green
+newmtl m0003
+Kd 0.0 0.0 1.0    # blue
+newmtl m0004
+Kd 1.0 0.5 0.0    # orange
+newmtl m0005
+Kd 1.0 1.0 0.0    # yellow
+newmtl m0006
+Kd 0.0 1.0 1.0    # cyan
+newmtl m0007
+Kd 0.5 0.0 1.0    # purple
+newmtl m0008
+Kd 1.0 0.0 1.0    # magenta
+newmtl m0010
+Kd 0.425 0.707 0.332 # forest green

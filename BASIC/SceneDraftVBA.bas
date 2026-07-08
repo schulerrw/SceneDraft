@@ -52,6 +52,8 @@ Attribute VB_Name = "SceneDraft"
   '''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
   Dim theSceneFile As String 'Path to SceneDesciptionFile
   '''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+  Dim myPi As Double
+
   
   'Adaptation of Leen Ammeraal's Cable.cpp tool to work in VBA Excel
   ' Rotation matrix is made global
@@ -65,6 +67,7 @@ Attribute VB_Name = "SceneDraft"
  '''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''';
   Dim xmlOffset As Integer 'used to track output row on Sheets("XML")
   Dim xmlObjectID As Integer
+  Dim objOffset As Integer
   '''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''';
   Dim objVertexCount As Integer 'used to offset vertix numbers for multiple objects
     '''''''''''''''''''''''''''''''''''''''''' String Buffers and thier indexes
@@ -82,21 +85,27 @@ Attribute VB_Name = "SceneDraft"
   '--------------------------------------------------------------------------------
   ' End of Globals
   '''''''' GGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGG
-  
-Sub sceneDraft()
+
+Sub SceneDraft()
+
 Dim a As String
 Dim B() As String
 Dim S As String
 Dim objColor As Integer
+Dim myMsg As String
+Dim HL As Integer
+FF = FreeFile()
 
   '''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
   '  full path to 3dmodel.model  temporary file
   theTempFile = "b:\3dmodel.model"
-  theOBJfile = "b:\scene.obj"
-  theSceneFile = "b:\scene.csv"
+  theOBJfile = "b:\exampleVBA.obj"
+  theSceneFile = "b:\example.csv"
   '  use SUBST B: <your path> at the cmd prompt--see the help for SUBST
   '''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
-
+  myPi = 4 * Atn(1)
+  'myPi = pi
+  
 vNext = 0
 fNext = 0
 wNext = 0
@@ -109,33 +118,39 @@ xmlObjectID = 1
 Call writeOBJheader
 
 'Open "b:\scene.csv" For Input As #1
-Open theSceneFile For Input As #1
+Open theSceneFile For Input As FF
 
-Line Input #1, a
+'myMsg = ""
+Line Input #FF, a
 B = Split(a, "D") ' get the character before Delimiter
 c = Right(B(0), 1)
-Debug.Print "Delimiter is '" & c & "'"
-Line Input #1, a
+'Debug.Print "Delimiter is '" & c & "'"
+'myMsg = myMsg + "Delimiter is '" & c & "'"
+Line Input #FF, a
 B = Split(a, c)
 HL = B(0)
-Debug.Print "There are " & HL & " header lines"
-Line Input #1, a
+'Debug.Print "There are " & HL & " header lines"
+'myMsg = myMsg + "There are " & HL & " header lines\n"
+Line Input #FF, a
 B = Split(a, c)
 global_radius = B(0)
-Debug.Print "The global_radius is:" & global_radius
-Line Input #1, a
+'Debug.Print "The global_radius is:" & global_radius
+'myMsg = myMsg + "The global_radius is:" & global_radius
+Line Input #FF, a
 B = Split(a, c)
 global_steps = B(0)
-Debug.Print "global_steps:" & global_steps
+'Debug.Print "global_steps:" & global_steps
+'myMsg = myMsg + "global_steps:" & global_steps
+'print myMsg
 For i = 5 To HL
-  Line Input #1, a 'skip to end of header
+  Line Input #FF, a 'skip to end of header
 Next i
 ' RWS B is an array of STRINGs.
 '     VBA does not always convert to numbers as expected.
 '     Test, test, test
 bail = False
 Do Until EOF(1) Or bail = True
-Line Input #1, a
+Line Input #FF, a
 objColor = 0
 If Len(a) > 0 Then  'stop parsing at blank line
 B = Split(a, c)
@@ -150,7 +165,7 @@ B = Split(a, c)
 '7 Hemisphere
 '8 Extrusion
 
-'#-myCone,C, x1,y1,z1, x2,y2,z2, <R>,<N>,<phi>
+'#-myCone,C, x1,y1,z1, x2,y2,z2, <R>,<N>,<Phi>
 '#-myCylinder,C,x1,y1,z1, x2,y2,z2, <R1>, <R2>, <N>
 '#-myTorus,C, Cx,Cy,Cz,ax,ay,az,R1,N1,<R2>,<N2>
 '#-myArcC,C, Cx,Cy,Cz, ax,ay,az, Sx,Sy,Sz, alpha,N1, <R2>, <N2>
@@ -162,43 +177,51 @@ B = Split(a, c)
 
 S = Trim(B(0))
 If S = "1" Then
- Debug.Print "cone"
+'Debug.Print "cone"
+'Print "cone"
  objColor = B(1)
  Call myCone(B)
  Call writeOBJobject(objColor)
 ElseIf S = "2" Then
- Debug.Print "cylinder"
+ 'Debug.Print "cylinder"
+ 'Print "cylinder"
  objColor = B(1)
  Call myCylinder(B)
  Call writeOBJobject(objColor)
 ElseIf S = "3" Then
- Debug.Print "Torus"
+ 'Debug.Print "Torus"
+ 'Print "Torus"
  objColor = B(1)
  Call myTorus(B)
  Call writeOBJobject(objColor)
 ElseIf S = "4" Then
- Debug.Print "arc center"
+ 'Debug.Print "arc center"
+ 'Print "arc center"
  objColor = B(1)
  Call myArcC(B)
  Call writeOBJobject(objColor)
 ElseIf S = "5" Then
- Debug.Print "arc chord"
+ 'Debug.Print "arc chord"
+ 'Print "arc chord"
  objColor = B(1)
  Call myChord(B)
  Call writeOBJobject(objColor)
 
 ElseIf S = "6" Then
- Debug.Print "sphere"
+ 'Debug.Print "sphere"
+ 'Print "sphere"
  objColor = B(1)
  Call mySphere80(B)
  Call writeOBJobject(objColor)
 ElseIf S = "7" Then
- Debug.Print "Hemisphere"
+ 'Debug.Print "Hemisphere"
+ 'Print "Hemisphere"
  objColor = B(1)
  Call myHemisphere(B)
  Call writeOBJobject(objColor)
  ElseIf S = "8" Then
- Debug.Print "Extrusion"
+ 'Debug.Print "Extrusion"
+ 'Print "Extrusion"
  objColor = B(1)
  Call myExtrusion(B)
  Call writeOBJobject(objColor)
@@ -231,10 +254,10 @@ Sub initRotate(ByVal a1 As Double, ByVal a2 As Double, ByVal a3 As Double, ByVal
   '  a is the point, v is the direction
   '
   Dim cosAlpha, sinAlpha, cosAlpha1, rho As Double
-  Dim cosphi, sinPhi, cosPhi2, sinPhi2 As Double
+  Dim cosPhi, sinPhi, cosPhi2, sinPhi2 As Double
   Dim cosTheta, sinTheta As Double
-  pi = 4# * Atn(1)
-  myAlpha = alpha * pi / 180
+  
+  myAlpha = alpha * myPi / 180
   cosAlpha = Cos(myAlpha)
   sinAlpha = Sin(myAlpha)
   cosAlpha1 = 1 - cosAlpha
@@ -242,42 +265,42 @@ Sub initRotate(ByVal a1 As Double, ByVal a2 As Double, ByVal a3 As Double, ByVal
   'Debug.Print ("RRRRRRRRRRRR>>>>>>>>>>>>>>>>>>>>>>>>> myAlpha = " & myAlpha & ", alpha = " & alpha & ", rho = " & rho)
   If rho = 0 Then
     theta = 0
-    cosphi = 1
+    cosPhi = 1
     sinPhi = 0
   Else
     If v1 = 0 Then
       If v2 >= 0 Then
-        theta = 0.5 * pi
+        theta = 0.5 * myPi
   '      Debug.Print ("RRRRRRRRRRRR>>>>>>>>>>>>>>>>>>>>>>>>> V1==0 and v2>0")
       Else
-        theta = 1.5 * pi
+        theta = 1.5 * myPi
     '    Debug.Print ("RRRRRRRRRRRR>>>>>>>>>>>>>>>>>>>>>>>>> V1==0 and v2<=0")
       End If
     Else
       theta = Atn(v2 / v1)
       If (v1 < 0) Then
-        theta = theta + pi
+        theta = theta + myPi
       End If
     '     Debug.Print ("RRRRRRRRRRRR>>>>>>>>>>>>>>>>>>>>>>>>> v1 = " & v1 & ", " & "v2 = " & v2 & ", theta = " & theta)
     End If
-    cosphi = v3 / rho
-    sinPhi = Sqr(1 - cosphi * cosphi)
-    ' cosPhi = cos(phi) sinPhi = sin(phi)
+    cosPhi = v3 / rho
+    sinPhi = Sqr(1 - cosPhi * cosPhi)
+    ' cosPhi = cos(Phi) sinPhi = sin(Phi)
   End If
   cosTheta = Cos(theta)
   sinTheta = Sin(theta)
-  cosPhi2 = cosphi * cosphi
+  cosPhi2 = cosPhi * cosPhi
   sinPhi2 = 1 - cosPhi2
   cosTheta2 = cosTheta * cosTheta
   sinTheta2 = 1 - cosTheta2
   r11 = (cosAlpha * cosPhi2 + sinPhi2) * cosTheta2 + cosAlpha * sinTheta2
-  r12 = sinAlpha * cosphi + cosAlpha1 * sinPhi2 * cosTheta * sinTheta
-  r13 = sinPhi * (cosphi * cosTheta * cosAlpha1 - sinAlpha * sinTheta)
-  r21 = sinPhi2 * cosTheta * sinTheta * cosAlpha1 - sinAlpha * cosphi
+  r12 = sinAlpha * cosPhi + cosAlpha1 * sinPhi2 * cosTheta * sinTheta
+  r13 = sinPhi * (cosPhi * cosTheta * cosAlpha1 - sinAlpha * sinTheta)
+  r21 = sinPhi2 * cosTheta * sinTheta * cosAlpha1 - sinAlpha * cosPhi
   r22 = sinTheta2 * (cosAlpha * cosPhi2 + sinPhi2) + cosAlpha * cosTheta2
-  r23 = sinPhi * (cosphi * sinTheta * cosAlpha1 + sinAlpha * cosTheta)
-  r31 = sinPhi * (cosphi * cosTheta * cosAlpha1 + sinAlpha * sinTheta)
-  r32 = sinPhi * (cosphi * sinTheta * cosAlpha1 - sinAlpha * cosTheta)
+  r23 = sinPhi * (cosPhi * sinTheta * cosAlpha1 + sinAlpha * cosTheta)
+  r31 = sinPhi * (cosPhi * cosTheta * cosAlpha1 + sinAlpha * sinTheta)
+  r32 = sinPhi * (cosPhi * sinTheta * cosAlpha1 - sinAlpha * cosTheta)
   r33 = cosAlpha * sinPhi2 + cosPhi2
   r41 = a1 - a1 * r11 - a2 * r21 - a3 * r31
   r42 = a2 - a1 * r12 - a2 * r22 - a3 * r32
@@ -304,22 +327,24 @@ End Sub
 
 
 Sub dumpOBJfile()
+  fff = FreeFile()
   If Len(theOBJfile) > 1 Then
-    Open theOBJfile For Output Shared As #1
+    Open theOBJfile For Output Shared As fff
   Else
-      Open "c:\users\schulerrw\Documents\scene.obj" For Output Shared As #1
+      Open "c:\users\schulerrw\Documents\scene.obj" For Output Shared As fff
   End If
   'Open myPath For Output Shared As #1
   For i = 0 To wNext - 1
-    Print #1, WaveFront(i)
+    Print #fff, WaveFront(i)
   Next i
-  Close #1
+  Close #fff
 End Sub
 Sub writeOBJheader()
   wNext = 0
   WaveFront(wNext) = "mtllib ./scenedraft.mtl"
   wNext = wNext + 1
 End Sub
+
 Sub writeOBJobject(Optional colorID As Integer = 0)
   'NOTE: objOffset 'used to track output row on Sheets("OBJ") and
   '      objVertexCount 'used to offset vertexIDs
@@ -334,9 +359,9 @@ Sub writeOBJobject(Optional colorID As Integer = 0)
   For i = 0 To maxVertex - 1
     VV = Trim(Vertices(i))
     SS = Split(VV, " ")
-    xx = SS(0)
-    yy = SS(1)
-    zz = SS(2)
+    xx = CDbl(SS(0))
+    yy = CDbl(SS(1))
+    zz = CDbl(SS(2))
     myStr = "v " & Format(xx, "####.00000000000") & " " & Format(yy, "####.00000000000") & " " & Format(zz, "####.00000000000") & "    #" & i + objVertexCount
     'Debug.Print VV & "x" & xx & "y" & yy & "z" & zz & ":"
     'Debug.Print myStr
@@ -351,9 +376,9 @@ Sub writeOBJobject(Optional colorID As Integer = 0)
     FF = Trim(Faces(i))
     'Debug.Print FF
     SS = Split(FF, " ")
-    xx = SS(0) + objVertexCount + 1
-    yy = SS(1) + objVertexCount + 1
-    zz = SS(2) + objVertexCount + 1
+    xx = CInt(Trim(SS(0))) + objVertexCount + 1
+    yy = CInt(Trim(SS(1))) + objVertexCount + 1
+    zz = CInt(Trim(SS(2))) + objVertexCount + 1
     myStr = "f " & Format(xx, "#####0") & " " & Format(yy, "#####0") & " " & Format(zz, "#####0")
     WaveFront(wNext) = myStr
     wNext = wNext + 1
@@ -365,35 +390,36 @@ End Sub
 
 
 Sub myCone(B() As String)
-  phi = 0# 'optional rotation about axis to align base-points
-  x1 = Trim(B(2)) + 0#
-  y1 = Trim(B(3)) + 0#
-  z1 = Trim(B(4)) + 0#
-  x2 = Trim(B(5)) + 0#
-  y2 = Trim(B(6)) + 0#
-  z2 = Trim(B(7)) + 0#
-  R = global_radius * 2
-  N = global_steps
+  Dim r, Phi As Double
+  Phi = 0#   'optional rotation about axis to align base-points
+  x1 = CDbl(Trim(B(2)))
+  y1 = CDbl(Trim(B(3)))
+  z1 = CDbl(Trim(B(4)))
+  x2 = CDbl(Trim(B(5)))
+  y2 = CDbl(Trim(B(6)))
+  z2 = CDbl(Trim(B(7)))
+  r = CDbl(global_radius) * 2#
+  N = CInt(global_steps)
   PPPL = UBound(B)
   If PPPL > 7 Then
     If Len(B(8)) > 0 Then
-      R1 = Trim(B(8)) + 0# 'optional overide of R for 1rst cap
-      Debug.Print "overide R1 = " & R1
+      R1 = CDbl(Trim(B(8))) 'optional overide of R for 1rst cap
+      'Debug.Print "overide R1 = " & R1
     End If
   End If
   If PPPL > 8 Then
     If Len(B(9)) > 0 Then
-      N = Trim(B(9)) + 0#  ' optional overide of N, number of steps
-      Debug.Print "overide N = " & N
+      N = CInt(Trim(B(9)))  ' optional overide of N, number of steps
+      'Debug.Print "overide N = " & N
     End If
   End If
   If PPPL > 9 Then
     If Len(B(10)) > 0 Then
-      phi = Trim(B(10)) + 0#  ' optional overide of phi, orientation
-      Debug.Print "overide phi = " & phi
+      Phi = CDbl(Trim(B(10)))  ' optional overide of Phi, orientation
+      'Debug.Print "overide Phi = " & Phi
     End If
   End If
-  '#-myCone,C, x1,y1,z1, x2,y2,z2, <R>,<N>,<phi>
+  '#-myCone,C, x1,y1,z1, x2,y2,z2, <R>,<N>,<Phi>
   ' ttt = sqrt(-1)
     Dim xx(30) As Double
     Dim yy(30) As Double  ' dimension must match n
@@ -436,18 +462,18 @@ Sub myCone(B() As String)
     theta = 360 / N
     
     'First Face's Vertices ''''''''''''''''''''''''''''''''''''''
-    If Len(R1) > 0 Then R = R1 'optional overide of radius
-    xx(0) = x1 + rx * R
-    yy(0) = y1 + ry * R
-    zz(0) = z1 + rz * R
-    If phi <> 0 Then 'extra rotation for orientation
+    If Len(R1) > 0 Then r = R1 'optional overide of radius
+    xx(0) = x1 + rx * r
+    yy(0) = y1 + ry * r
+    zz(0) = z1 + rz * r
+    If Phi <> 0 Then 'extra rotation for orientation
       myXX = xx(0)
       myYY = yy(0)
       myZZ = zz(0)
-      Call initRotate(x1, y1, z1, aa, bb, cc, phi)
-      Debug.Print "Phi fix: " & phi, myXX, myYY, myZZ
+      Call initRotate(x1, y1, z1, aa, bb, cc, Phi)
+      Debug.Print "Phi fix: " & Phi, myXX, myYY, myZZ
       Call rotate(myXX, myYY, myZZ)
-      Debug.Print "Phi fixed           : " & phi, myXX, myYY, myZZ
+      Debug.Print "Phi fixed           : " & Phi, myXX, myYY, myZZ
       xx(0) = myXX
       yy(0) = myYY
       zz(0) = myZZ
@@ -471,7 +497,7 @@ Sub myCone(B() As String)
   
     'save center of 2nd point as index 2n+1
     Vertices(vertCount) = x2 & " " & y2 & " " & z2
-    Debug.Print "In cone z2 = >" & z2 & "<"
+    'Debug.Print "In cone z2 = >" & z2 & "<"
     vertCount = vertCount + 1
 
 ''''''' FACES
@@ -528,37 +554,33 @@ Sub myCone(B() As String)
     fNext = faceCount
 End Sub
 
-
-
 Sub myCylinder(B() As String)
 ' #,C,x1,y1,z1, x2,y2,z2, R, N
-  x1 = Trim(B(2)) + 0#
-  y1 = Trim(B(3)) + 0#
-  z1 = Trim(B(4)) + 0#
-  x2 = Trim(B(5)) + 0#
-  y2 = Trim(B(6)) + 0#
-  z2 = Trim(B(7)) + 0#
-  R = global_radius
-  N = global_steps
+  x1 = CDbl(Trim(B(2)))
+  y1 = CDbl(Trim(B(3)))
+  z1 = CDbl(Trim(B(4)))
+  x2 = CDbl(Trim(B(5)))
+  y2 = CDbl(Trim(B(6)))
+  z2 = CDbl(Trim(B(7)))
+  r = global_radius
+  N = CInt(global_steps)
   PPPL = UBound(B)
   If PPPL > 7 Then
     If Len(B(8)) > 0 Then
-      R1 = Trim(B(8)) + 0# 'optional overide of R for 1rst cap
+      R1 = CDbl(Trim(B(8))) 'optional overide of R for 1rst cap
     End If
   End If
   If PPPL > 8 Then
     If Len(B(9)) > 0 Then
-      R2 = Trim(B(9)) + 0# ' optional overid of R for 2nd cap
+      R2 = CDbl(Trim(B(9))) ' optional overid of R for 2nd cap
     End If
   End If
   If PPPL > 9 Then
     If Len(B(10)) > 0 Then
-      N = Trim(B(10)) + 0 ' optional overide of N, number of steps
-      Debug.Print "overide N"
+      N = CInt(Trim(B(10))) ' optional overide of N, number of steps
+      'Debug.Print "overide N"
     End If
   End If
-  'm = Sheets("Cyl").Cells(2, 11) 'number of cylinders
-  ' ttt = sqrt(-1)
     Dim xx(30) As Double
     Dim yy(30) As Double  ' dimension must match n
     Dim zz(30) As Double
@@ -600,10 +622,10 @@ Sub myCylinder(B() As String)
     theta = 360 / N
     
     'First Face's Vertices ''''''''''''''''''''''''''''''''''''''
-    If Len(R1) > 0 Then R = R1 'optional overide of radius
-    xx(0) = x1 + rx * R
-    yy(0) = y1 + ry * R
-    zz(0) = z1 + rz * R
+    If Len(R1) > 0 Then r = R1 'optional overide of radius
+    xx(0) = x1 + rx * r
+    yy(0) = y1 + ry * r
+    zz(0) = z1 + rz * r
     Call initRotate(x1, y1, z1, aa, bb, cc, theta)
     For i = 1 To N - 1
       myXX = xx(i - 1)
@@ -620,10 +642,10 @@ Sub myCylinder(B() As String)
     Next i
     
     'Second Faces's Vertices '''''''''''''''''''''''''''''''''''''
-    If Len(R2) > 0 Then R = R2 'optional overide of radius
-    xx(0) = x2 + rx * R
-    yy(0) = y2 + ry * R
-    zz(0) = z2 + rz * R
+    If Len(R2) > 0 Then r = R2 'optional overide of radius
+    xx(0) = x2 + rx * r
+    yy(0) = y2 + ry * r
+    zz(0) = z2 + rz * r
     For i = 1 To N - 1
       myXX = xx(i - 1)
       myYY = yy(i - 1)
@@ -717,41 +739,43 @@ End Sub
 Sub myTorus(B() As String)
   Dim Cx, Cy, Cz As Double ' center point
   Dim ax, ay, az As Double ' direction=axis of rotation
-  Dim R1, N1, R2, N2 As Double 'Radii and Steps 1 is torus 2 is tube
+  Dim R1, R2 As Double 'Radii and Steps 1 is torus 2 is tube
+  Dim i, j, N1, N2 As Integer
   PPPL = UBound(B)
-  Cx = Trim(B(2)) + 0#
-  Cy = Trim(B(3)) + 0#
-  Cz = Trim(B(4)) + 0#
-  ax = Trim(B(5)) + 0#
-  ay = Trim(B(6)) + 0#
-  az = Trim(B(7)) + 0#
-  R1 = 10
-  N1 = 6
+  Cx = CDbl(Trim(B(2)))
+  Cy = CDbl(Trim(B(3)))
+  Cz = CDbl(Trim(B(4)))
+  ax = CDbl(Trim(B(5)))
+  ay = CDbl(Trim(B(6)))
+  az = CDbl(Trim(B(7)))
+  R1 = 10#
+  N1 = CInt(6)
   R2 = global_radius
   N2 = global_steps
   If PPPL > 7 Then
     If Len(B(8)) > 0 Then
-      R1 = Trim(B(8)) + 0# 'optional overide of R for 1rst cap
+      R1 = CDbl(Trim(B(8))) 'optional overide of R for 1rst cap
     End If
   End If
   If PPPL > 8 Then
     If Len(B(9)) > 0 Then
-      N1 = Trim(B(9)) + 0# ' optional overide of N, number of steps
+      Debug.Print B(9)
+      N1 = CInt(Trim(B(9))) ' optional overide of N, number of steps
     End If
   End If
   If PPPL > 9 Then
     If Len(B(10)) > 0 Then
-      R2 = Trim(B(10)) + 0#  'optional overide of R for 1rst cap
+      R2 = CDbl(Trim(B(10)))  'optional overide of R for 1rst cap
     End If
   End If
   If PPPL > 10 Then
     If Len(B(11)) > 0 Then
-      N2 = Trim(B(11)) + 0# ' optional overide of N, number of steps
+      N2 = CDbl(Trim(B(11))) ' optional overide of N, number of steps
       Debug.Print "overide N"
     End If
   End If
   '#-myTorus,C, Cx,Cy,Cz,ax,ay,az,R1,N1,<R2>,<N2>
-  ' ttt = sqrt(-1)
+
     Dim xx(30) As Double
     Dim yy(30) As Double  ' dimension must match n
     Dim zz(30) As Double
@@ -772,14 +796,17 @@ Sub myTorus(B() As String)
 
     ''''''''''''''''''''''  Orthogonal Vector
     If Abs(aa) < 0.000001 And Abs(bb) < 0.000001 Then
-      rx = 0
+      rx = 0#
       ry = cc
-      rz = -1 * bb
+      rz = -1# * bb
     Else
       rx = bb
-      ry = -1 * aa
-      rz = 0
+      ry = -1# * aa
+      rz = 0#
     End If
+    rx = CDbl(rx)
+    ry = CDbl(ry)
+    rz = CDbl(rz)
     ''''''''''''''''''''''''''''''''''' Unit Length
     myLen = Sqr(rx * rx + ry * ry + rz * rz)
     rx = rx / myLen
@@ -787,8 +814,8 @@ Sub myTorus(B() As String)
     rz = rz / myLen
     
     ' stride in degrees around cenerline circle
-    theta1 = 360 / N1
-    theta2 = 360 / N2 'stride in degrees around profile ''pencil width
+    theta1 = 360# / N1
+    theta2 = 360# / N2  'stride in degrees around profile ''pencil width
     
     CLx = Cx + rx * R1
     CLy = Cy + ry * R1  'point on center line
@@ -828,7 +855,7 @@ Sub myTorus(B() As String)
     
     '' Rotate Profile N1 times '''''''''''''''''''''''''''''''
     Call initRotate(Cx, Cy, Cz, ax, ay, az, theta1)
-    For j = 1 To N1 - 1
+    For j = 1 To CInt(N1) - 1
       For i = 0 To N2 - 1
         myXX = xx(i)
         myYY = yy(i)
@@ -851,7 +878,7 @@ Sub myTorus(B() As String)
        vertCount = 0
     'N2 vertices per profile
     'N1 profiles
-    For j = 0 To N1 - 2
+    For j = 0 To CInt(N1) - 2
       For i = 0 To N2 - 2
        v1 = j * N2 + i
        v2 = v1 + 1
@@ -873,7 +900,7 @@ Sub myTorus(B() As String)
 
     Next j  ' end of loop through profiles
     For i = 0 To N2 - 2
-       v1 = (N1 - 1) * N2 + i
+       v1 = (CInt(N1) - 1) * N2 + i
        v2 = v1 + 1
        v3 = i + 1
        v4 = i
@@ -882,8 +909,8 @@ Sub myTorus(B() As String)
        Faces(faceCount) = v2 & " " & v3 & " " & v4
           faceCount = faceCount + 1
     Next i
-       v1 = (N1) * N2 - 1
-       v2 = (N1 - 1) * N2
+       v1 = CInt(N1) * N2 - 1
+       v2 = (CInt(N1) - 1) * N2
        v3 = N2 - 1
        v4 = 0
        Faces(faceCount) = v1 & " " & v2 & " " & v3
@@ -892,11 +919,17 @@ Sub myTorus(B() As String)
           faceCount = faceCount + 1
    
     fNext = faceCount
-    Debug.Print "in torus: center is (" & Cx & "," & Cy & "," & Cz & ") CL is (" & CLx & "," & CLy & "," & CLz & ")"
-    Debug.Print "        : vertex is (" & px & "," & py & "," & pz & ") and AP is (" & APx & "," & APy & "," & APz & ")"
-    Debug.Print "        : R1 = " & R1 & ", N1 = " & N1 & "  R2 = " & R2 & ", N2 = " & N2
-    Debug.Print "        : rx = " & rx & ", ry = " & ry & ", rz = " & rz & " check " & (R2 + R1)
-    Debug.Print "        : Theta1 = " & theta1 & ", Theta2 = " & theta2
+'    myStr =  "in torus: center is (" & Cx & "," & Cy & "," & Cz & ") CL is (" & CLx & "," & CLy & "," & CLz & ")" +chr(13)
+'    myStr = myStr + "        : vertex is (" & px & "," & py & "," & pz & ") and AP is (" & APx & "," & APy & "," & APz & ")"+chr(13)
+'    myStr = myStr + "        : R1 = " & R1 & ", N1 = " & N1 & "  R2 = " & R2 & ", N2 = " & N2 & chr(13)
+'    myStr = myStr + "        : rx = " & rx & ", ry = " & ry & ", rz = " & rz & " check " & (R2 + R1) & chr(13)
+'    myStr = myStr + "        : Theta1 = " & theta1 & ", Theta2 = " & theta2 & chr(13)
+'    print myStr
+'    Debug.Print "in torus: center is (" & Cx & "," & Cy & "," & Cz & ") CL is (" & CLx & "," & CLy & "," & CLz & ")"
+'    Debug.Print "        : vertex is (" & px & "," & py & "," & pz & ") and AP is (" & APx & "," & APy & "," & APz & ")"
+'    Debug.Print "        : R1 = " & R1 & ", N1 = " & N1 & "  R2 = " & R2 & ", N2 = " & N2
+'    Debug.Print "        : rx = " & rx & ", ry = " & ry & ", rz = " & rz & " check " & (R2 + R1)
+'    Debug.Print "        : Theta1 = " & theta1 & ", Theta2 = " & theta2
     
 End Sub
 
@@ -908,36 +941,36 @@ Sub myArcC(B() As String)
   Dim ax, ay, az As Double ' direction=axis of rotation
   Dim R1, N1, R2, N2 As Double 'Radii and Steps
   PPPL = UBound(B)  ' How many optional parameters are set? Subscript out of range errors otherwise
-  Cx = Trim(B(2)) + 0#
-  Cy = Trim(B(3)) + 0#
-  Cz = Trim(B(4)) + 0#
-  ax = Trim(B(5)) + 0#
-  ay = Trim(B(6)) + 0#
-  az = Trim(B(7)) + 0#
-  Sx = Trim(B(8)) + 0#
-  Sy = Trim(B(9)) + 0#
-  Sz = Trim(B(10)) + 0#
-  alpha = Trim(B(11)) + 0#
-  N1 = 6
-  R2 = global_radius
-  N2 = global_steps
-  If Len(B(12)) > 0 Then
-    N1 = Trim(B(12)) + 0# ' optional overide of N, number of steps
-    Debug.Print "overide N1 = " & N1
+  Cx = CDbl(Trim(B(2)))
+  Cy = CDbl(Trim(B(3)))
+  Cz = CDbl(Trim(B(4)))
+  ax = CDbl(Trim(B(5)))
+  ay = CDbl(Trim(B(6)))
+  az = CDbl(Trim(B(7)))
+  Sx = CDbl(Trim(B(8)))
+  Sy = CDbl(Trim(B(9)))
+  Sz = CDbl(Trim(B(10)))
+  alpha = CDbl(Trim(B(11)))
+  N1 = CInt(6)
+  R2 = CDbl(global_radius)
+  N2 = CInt(global_steps)
+  If PPPL > 11 Then
+          If Len(B(12)) > 0 Then
+            N1 = CInt(Trim(B(12))) ' optional overide of N, number of steps
+            'Debug.Print "overide N1 = " & N1
+          End If
   End If
   If PPPL > 12 Then
      If Len(B(13)) > 0 Then
-       R2 = Trim(B(13)) + 0#  'optional overide of R for 1rst cap
+       R2 = CDbl(Trim(B(13)))  'optional overide of R for 1rst cap
      End If
   End If
   If PPPL > 13 Then
     If Len(B(14)) > 0 Then
-      N2 = Trim(B(14)) + 0# ' optional overide of N, number of steps
-      Debug.Print "overide N2"
+      N2 = CInt(Trim(B(14))) ' optional overide of N, number of steps
+      'Debug.Print "overide N2"
     End If
    End If
-  'm = Sheets("Cyl").Cells(2, 11) 'number of cylinders
-  ' ttt = sqrt(-1)
     Dim xx(30) As Double
     Dim yy(30) As Double  ' dimension must match n
     Dim zz(30) As Double
@@ -1089,43 +1122,44 @@ Sub myArcC(B() As String)
     faceCount = faceCount + 1
  
     fNext = faceCount
-    Debug.Print "in   arc: center is (" & Cx & "," & Cy & "," & Cz & ") CL is (" & CLx & "," & CLy & "," & CLz & ")"
-    Debug.Print "        : start is (" & Sx & "," & Sy & "," & Sz & ")"
-    Debug.Print "        : vertex is (" & px & "," & py & "," & pz & ") and AP is (" & APx & "," & APy & "," & APz & ")"
-    Debug.Print "        : N1 = " & N1 & "; R2 = " & R2 & ", N2 = " & N2; ""
-    Debug.Print "        : rx = " & rx & ", ry = " & ry & ", rz = " & rz & " check " & N1 * N2
-    Debug.Print "        : Theta1 = " & theta1 & ", Theta2 = " & theta2
-    
+   ' Debug.Print "in   arc: center is (" & Cx & "," & Cy & "," & Cz & ") CL is (" & CLx & "," & CLy & "," & CLz & ")"
+   ' Debug.Print "        : start is (" & Sx & "," & Sy & "," & Sz & ")"
+   ' Debug.Print "        : vertex is (" & px & "," & py & "," & pz & ") and AP is (" & APx & "," & APy & "," & APz & ")"
+   ' Debug.Print "        : N1 = " & N1 & "; R2 = " & R2 & ", N2 = " & N2 & ";"
+   ' Debug.Print "        : rx = " & rx & ", ry = " & ry & ", rz = " & rz & " check " & N1 * N2
+   ' Debug.Print "        : Theta1 = " & theta1 & ", Theta2 = " & theta2
 End Sub
+
+
 Sub myChord(B() As String)
 '#-myChord, C, Sx,Sy,Sz, Ex, Ey,Ez, ax,ay,az, H, N, <R1>, <N1>
   Dim Cx, Cy, Cz As Double ' center point
   Dim ax, ay, az As Double ' direction=axis of rotation
   Dim R1, N1, R2, N2 As Double 'Radii and Steps 1
   PPPL = UBound(B)  ' How many optional parameters are set? Subscript out of range errors otherwise
-  Sx = Trim(B(2)) + 0#
-  Sy = Trim(B(3)) + 0#
-  Sz = Trim(B(4)) + 0#
-  Ex = Trim(B(5)) + 0#
-  Ey = Trim(B(6)) + 0#
-  Ez = Trim(B(7)) + 0#
-  ax = Trim(B(8)) + 0#
-  ay = Trim(B(9)) + 0#
-  az = Trim(B(10)) + 0#
-  H = Trim(B(11)) + 0#
-  N = Trim(B(12)) + 0#
+  Sx = CDbl(Trim(B(2)))
+  Sy = CDbl(Trim(B(3)))
+  Sz = CDbl(Trim(B(4)))
+  Ex = CDbl(Trim(B(5)))
+  Ey = CDbl(Trim(B(6)))
+  Ez = CDbl(Trim(B(7)))
+  ax = CDbl(Trim(B(8)))
+  ay = CDbl(Trim(B(9)))
+  az = CDbl(Trim(B(10)))
+  H = CDbl(Trim(B(11)))
+  N = CInt(Trim(B(12)))
   
   R1 = global_radius
   N1 = global_steps
   If PPPL > 12 Then
     If Len(B(13)) > 0 Then
-      R1 = Trim(B(13)) + 0# 'optional overide
+      R1 = CDbl(Trim(B(13))) 'optional overide
     End If
   End If
   If PPPL > 13 Then
     If Len(B(14)) > 0 Then
-      N1 = Trim(B(14)) + 0# ' optional overide of N, number of steps
-      Debug.Print "overide N1"
+      N1 = CInt(Trim(B(14))) ' optional overide of N, number of steps
+      'Debug.Print "overide N1"
     End If
   End If
 
@@ -1137,8 +1171,6 @@ Sub myChord(B() As String)
     Dim aa, bb, cc As Double
     Dim rx, ry, rz As Double
     Dim myLen As Double
-    
-    pi = 4# * Atn(1)
     
     If H = 0 Then
       B(8) = R1    'If H is zero, we have a straight line
@@ -1221,20 +1253,20 @@ Sub myChord(B() As String)
       alpha = 180
     Else
       alpha = 2 * Atn(x / Sqr(-x * x + 1))
-      alpha = alpha * 180 / pi
+      alpha = alpha * 180 / myPi
     End If
     If H > circleR Then
       alpha = 360 - alpha
-      Debug.Print "adding to alpha " & alpha
+      'Debug.Print "adding to alpha " & alpha
     End If
     
-    Debug.Print "in chord: center is (" & centerX & "," & centerY & "," & centerZ & ") and r = " & circleR
-    Debug.Print "        : start is (" & Sx & "," & Sy & "," & Sz & ")  and N = " & N
-    Debug.Print "        : MidChord is (" & chordMidX & "," & chordMidY & "," & chordMidZ & ") "
-    Debug.Print "        : dirCenter is (" & dircenX & "," & dircenY & "," & dircenZ & ")  and H = " & H
-    Debug.Print "        : end is (" & Ex & "," & Ey & "," & Ez & ") and  L = " & chordL
-    Debug.Print "        : Central Angle = " & alpha & "   , x = " & x
-    Debug.Print "        : R1 = " & R1 & ", N1 = " & N1
+   ' Debug.Print "in chord: center is (" & centerX & "," & centerY & "," & centerZ & ") and R = " & circleR
+   ' Debug.Print "        : start is (" & Sx & "," & Sy & "," & Sz & ")  and N = " & N
+   ' Debug.Print "        : MidChord is (" & chordMidX & "," & chordMidY & "," & chordMidZ & ") "
+   ' Debug.Print "        : dirCenter is (" & dircenX & "," & dircenY & "," & dircenZ & ")  and H = " & H
+   ' Debug.Print "        : end is (" & Ex & "," & Ey & "," & Ez & ") and  L = " & chordL
+   ' Debug.Print "        : Central Angle = " & alpha & "   , x = " & x
+   ' Debug.Print "        : R1 = " & R1 & ", N1 = " & N1
     
     ' #-myArcC,C, Cx,Cy,Cz, ax,ay,az, Sx,Sy,Sz, alpha,N1, <R2>, <N2>
     B(2) = centerX
@@ -1249,10 +1281,10 @@ Sub myChord(B() As String)
     B(11) = alpha
     B(12) = N
     If PPPL > 12 Then
-    B(13) = R2
+    B(13) = R1
     End If
     If PPPL > 13 Then
-    B(14) = N2
+    B(14) = N1
     End If
     Call myArcC(B())
 End Sub
@@ -1271,16 +1303,16 @@ Sub mySphere80(B() As String)
   FF2 = Array(15, 2, 13, 15, 14, 3, 16, 14, 17, 4, 18, 17, 19, 5, 20, 19, 21, 6, 22, 21, 24, 7, 23, 24, 26, 8, 25, 26, 28, 9, 27, 28, 30, 10, 29, 30, 32, 11, 31, 32, 33, 8, 26, 33, 34, 9, 28, 34, 35, 10, 30, 35, 36, 11, 32, 36, 37, 7, 24, 37, 39, 12, 38, 39, 38, 12, 40, 38, 40, 12, 41, 40, 41, 12, 42, 41, 42, 12, 39, 42)
   FF3 = Array(14, 13, 3, 13, 17, 16, 4, 16, 19, 18, 5, 18, 21, 20, 6, 20, 15, 22, 2, 22, 13, 23, 3, 23, 16, 25, 4, 25, 18, 27, 5, 27, 20, 29, 6, 29, 22, 31, 2, 31, 23, 26, 3, 26, 25, 28, 4, 28, 27, 30, 5, 30, 29, 32, 6, 32, 31, 24, 2, 24, 33, 38, 8, 38, 34, 40, 9, 40, 35, 41, 10, 41, 36, 42, 11, 42, 37, 39, 7, 39)
 
-    R = Trim(B(5)) + 0# 'Radius of Sphere
-  xxx = Trim(B(2)) + 0#
-  yyy = Trim(B(3)) + 0#
-  zzz = Trim(B(4)) + 0#
+    r = CDbl(Trim(B(5))) 'Radius of Sphere
+  xxx = CDbl(Trim(B(2)))
+  yyy = CDbl(Trim(B(3)))
+  zzz = CDbl(Trim(B(4)))
   vNext = 0
   fNext = 0
-  
+
   For j = 0 To 41
   
-    myStr = PPX(j) * R + xxx & " " & PPY(j) * R + yyy & " " & PPZ(j) * R + zzz
+    myStr = PPX(j) * r + xxx & " " & PPY(j) * r + yyy & " " & PPZ(j) * r + zzz
     Vertices(vNext) = myStr
     ' bug.Print myStr
     vNext = vNext + 1
@@ -1302,7 +1334,7 @@ Sub myHemisphere(B() As String)
   Dim Cx, Cy, Cz As Double ' center point
   Dim ax, ay, az As Double ' direction=axis of rotation
   Dim R1, N1, R2, N2 As Double 'Radii and Steps
-  Dim theta, phi As Double
+  Dim theta, Phi As Double
   PPPL = UBound(B)  ' How many optional parameters are set? Subscript out of range errors otherwise
   Cx = CDbl(Trim(B(2)))
   Cy = CDbl(Trim(B(3)))
@@ -1353,13 +1385,13 @@ Sub myHemisphere(B() As String)
       
 ''' get direction to point on first profile
            If Abs(aa) < 0.000001 And Abs(bb) < 0.000001 Then
-              rx = 0#
+              rx = 0
               ry = cc
-              rz = -1# * bb
+              rz = -1 * bb
             Else
               rx = bb
-              ry = -1# * aa
-              rz = 0#
+              ry = -1 * aa
+              rz = 0
             End If
 
      ''' normalize to unit length
@@ -1374,9 +1406,9 @@ Sub myHemisphere(B() As String)
         aa = aa / LLL
         bb = bb / LLL
         cc = cc / LLL
-      pi = 4# * Atn(1#)
-      phi = pi / (2 * stepsLat)
-      theta = 360# / N2
+
+      Phi = myPi / (2 * stepsLat)
+      theta = 360 / N2
       
       ''' set first point on fist profile
         xx(0) = Cx + rx * R1
@@ -1402,13 +1434,13 @@ Sub myHemisphere(B() As String)
       
     '''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
     For myLat = 2 To stepsLat - 1
-      R = R1 * Cos((myLat - 1) * phi) ' jReduce each lattitude radius
-      x2 = Cx + aa * Sin((myLat - 1) * phi)
-      y2 = Cy + bb * Sin((myLat - 1) * phi)
-      z2 = Cz + cc * Sin((myLat - 1) * phi)
-      xx(0) = x2 + rx * R
-      yy(0) = y2 + ry * R
-      zz(0) = z2 + rz * R
+      r = R1 * Cos((myLat - 1) * Phi) ' jReduce each lattitude radius
+      x2 = Cx + aa * Sin((myLat - 1) * Phi)
+      y2 = Cy + bb * Sin((myLat - 1) * Phi)
+      z2 = Cz + cc * Sin((myLat - 1) * Phi)
+      xx(0) = x2 + rx * r
+      yy(0) = y2 + ry * r
+      zz(0) = z2 + rz * r
       Vertices(vNext) = xx(0) & " " & yy(0) & " " & zz(0)
       vNext = vNext + 1
       ''' rotation stays the same: same axis same angle
@@ -1483,14 +1515,16 @@ Sub myHemisphere(B() As String)
     fNext = fNext + 1
 
 End Sub
+
+
 Sub myExtrusion(B() As String)
   'R = Sheets("Scene").Cells(2, 9) ' Radius of hemisphere base
   'N = Sheets("Scene").Cells(m, 6) ' number of polygon vertices
-         R = global_radius
-    deltaX = Trim(B(2)) + 0#
-    deltaY = Trim(B(3)) + 0#
-    deltaZ = Trim(B(4)) + 0#
-         N = Trim(B(5)) + 0#
+         r = global_radius
+    deltaX = CDbl(Trim(B(2)))
+    deltaY = CDbl(Trim(B(3)))
+    deltaZ = CDbl(Trim(B(4)))
+         N = CDbl(Trim(B(5)))
   Dim xx(30) As Double
   Dim yy(30) As Double  ' dimension must match N 30 seems safe for now
   Dim zz(30) As Double
@@ -1501,11 +1535,12 @@ Sub myExtrusion(B() As String)
   vNext = 0
   
   For i = 1 To N
-    xx(i - 1) = Trim(B(6 + 3 * (i - 1))) + 0#
-    yy(i - 1) = Trim(B(7 + 3 * (i - 1))) + 0#
-    zz(i - 1) = Trim(B(8 + 3 * (i - 1))) + 0#
-    Debug.Print i, xx(i), yy(i), zz(i)
+    xx(i - 1) = CDbl(Trim(B(6 + 3 * (i - 1))))
+    yy(i - 1) = CDbl(Trim(B(7 + 3 * (i - 1))))
+    zz(i - 1) = CDbl(Trim(B(8 + 3 * (i - 1))))
+    ' Debug.Print i, xx(i), yy(i), zz(i)
   Next i
+  
   
   'assume bottom face is listed pointing into center of volume
   For i = 0 To N - 1

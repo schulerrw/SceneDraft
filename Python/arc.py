@@ -276,14 +276,16 @@ class arc2:
             self.r1 = float(line[13])
             if self.r1 < 0:
                 self.r1 = -1.0
+        except Exception:
+            self.r1 = globalRadius
+
+        try:
             self.n1 = int(line[14])
             if self.n1 < 3:
                 self.n1 = -1
         except Exception:
-            self.r1 = -1.0
             self.n1 = -1
-            # no options on line
-
+  
         if HH == 0: # we have a straight line
             myLine = []
             myLine.append(self.color)
@@ -371,6 +373,10 @@ class arc2:
         myLine.append(self.Sz)
         myLine.append(alpha)
         myLine.append(self.N)
+        if self.r1 > 0:
+            myLine.append(self.r1)
+        if self.n1 > 0:
+            myLine.append(self.n1)
         # If PPPL > 12 Then
         # B(13) = R2
         # End If

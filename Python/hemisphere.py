@@ -127,10 +127,10 @@ class hemisphere:
         ''' normalize to unit length
             vector from base center to pole
         '''
-        myLen = math.sqrt(a*a + b*b + c*c)
-        a = a / myLen
-        b = b / myLen
-        c = c / myLen
+        # 'myLen = math.sqrt(a*a + b*b + c*c)
+        # 'a = a / myLen
+        # 'b = b / myLen     # DON'T Normalize this vector
+        # 'c = c / myLen
 
         phi = math.pi/(2*self.Steps)
         # print(phi)

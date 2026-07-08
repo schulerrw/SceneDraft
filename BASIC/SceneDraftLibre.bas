@@ -47,13 +47,12 @@
   ' GLOBALS
   '''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
   ' Set path to a legal place to write on your disk & modify the CopyIt.bat file'
-  Dim theTempFile As String                                                     '
-  '''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
   Dim theOBJfile As String 'Wavefron *.obj format file.
   '''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
   Dim theSceneFile As String 'Path to SceneDesciptionFile
   '''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
-  
+  Dim myPi as Double
+
   'Adaptation of Leen Ammeraal's Cable.cpp tool to work in VBA Excel
   ' Rotation matrix is made global
   ' Call initRotate with a base point, direction and an angle in degrees
@@ -85,24 +84,23 @@
   ' End of Globals
   '''''''' GGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGG
 
-  
-Sub Main
-ff = FreeFile()
+Sub SceneDraft()
+
 Dim a As String
 Dim B() As String
 Dim S As String
 Dim objColor As Integer
 Dim myMsg as String
 Dim HL as integer
-
+ff = FreeFile()
   '''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
   '  full path to 3dmodel.model  temporary file
-  theTempFile = "b:\3dmodel.model"
-  theOBJfile = "b:\scene.obj"
-  theSceneFile = "b:\scene.csv"
+  theOBJfile = "b:\exampleLibre.obj"
+  theSceneFile = "b:\example.csv"
   '  use SUBST B: <your path> at the cmd prompt--see the help for SUBST
   '''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
-
+  'myPi = 4.0*atn(1.0)
+  myPi = pi
 vNext = 0
 fNext = 0
 wNext = 0
@@ -117,28 +115,28 @@ Call writeOBJheader
 'Open "b:\scene.csv" For Input As #1
 Open theSceneFile For Input As ff
 
-myMsg = ""
+'myMsg = ""
 Line Input #ff, a
 B = Split(a, "D") ' get the character before Delimiter
 c = Right(B(0), 1)
 'Debug.Print "Delimiter is '" & c & "'"
-myMsg = myMsg + "Delimiter is '" & c & "'"
+'myMsg = myMsg + "Delimiter is '" & c & "'"
 Line Input #ff, a
 B = Split(a, c)
 HL = B(0)
 'Debug.Print "There are " & HL & " header lines"
-myMsg = myMsg + "There are " & HL & " header lines\n"
+'myMsg = myMsg + "There are " & HL & " header lines\n"
 Line Input #ff, a
 B = Split(a, c)
 global_radius = B(0)
 'Debug.Print "The global_radius is:" & global_radius
-myMsg = myMsg + "The global_radius is:" & global_radius
+'myMsg = myMsg + "The global_radius is:" & global_radius
 Line Input #ff, a
 B = Split(a, c)
 global_steps = B(0)
 'Debug.Print "global_steps:" & global_steps
-myMsg = myMsg + "global_steps:" & global_steps
-print myMsg
+'myMsg = myMsg + "global_steps:" & global_steps
+'print myMsg
 
 For i = 5 To HL
   Line Input #ff, a 'skip to end of header
@@ -164,7 +162,7 @@ B = Split(a, c)
 '7 Hemisphere
 '8 Extrusion
 
-'#-myCone,C, x1,y1,z1, x2,y2,z2, <R>,<N>,<phi>
+'#-myCone,C, x1,y1,z1, x2,y2,z2, <R>,<N>,<Phi>
 '#-myCylinder,C,x1,y1,z1, x2,y2,z2, <R1>, <R2>, <N>
 '#-myTorus,C, Cx,Cy,Cz,ax,ay,az,R1,N1,<R2>,<N2>
 '#-myArcC,C, Cx,Cy,Cz, ax,ay,az, Sx,Sy,Sz, alpha,N1, <R2>, <N2>
@@ -176,51 +174,51 @@ B = Split(a, c)
 
 S = Trim(B(0))
 If S = "1" Then
- 'Debug.Print "cone"
- print "cone"
+'Debug.Print "cone"
+'Print "cone"
  objColor = B(1)
  Call myCone(B)
  Call writeOBJobject(objColor)
 ElseIf S = "2" Then
  'Debug.Print "cylinder"
- Print "cylinder"
+ 'Print "cylinder"
  objColor = B(1)
  Call myCylinder(B)
  Call writeOBJobject(objColor)
 ElseIf S = "3" Then
  'Debug.Print "Torus"
- Print "Torus"
+ 'Print "Torus"
  objColor = B(1)
  Call myTorus(B)
  Call writeOBJobject(objColor)
 ElseIf S = "4" Then
  'Debug.Print "arc center"
- print "arc center"
+ 'Print "arc center"
  objColor = B(1)
  Call myArcC(B)
  Call writeOBJobject(objColor)
 ElseIf S = "5" Then
  'Debug.Print "arc chord"
- print "arc chord"
+ 'Print "arc chord"
  objColor = B(1)
  Call myChord(B)
  Call writeOBJobject(objColor)
 
 ElseIf S = "6" Then
  'Debug.Print "sphere"
- print "sphere"
+ 'Print "sphere"
  objColor = B(1)
  Call mySphere80(B)
  Call writeOBJobject(objColor)
 ElseIf S = "7" Then
  'Debug.Print "Hemisphere"
- print "Hemisphere"
+ 'Print "Hemisphere"
  objColor = B(1)
  Call myHemisphere(B)
  Call writeOBJobject(objColor)
  ElseIf S = "8" Then
  'Debug.Print "Extrusion"
- print "Extrusion"
+ 'Print "Extrusion"
  objColor = B(1)
  Call myExtrusion(B)
  Call writeOBJobject(objColor)
@@ -253,10 +251,10 @@ Sub initRotate(ByVal a1 As Double, ByVal a2 As Double, ByVal a3 As Double, ByVal
   '  a is the point, v is the direction
   '
   Dim cosAlpha, sinAlpha, cosAlpha1, rho As Double
-  Dim cosphi, sinPhi, cosPhi2, sinPhi2 As Double
+  Dim cosPhi, sinPhi, cosPhi2, sinPhi2 As Double
   Dim cosTheta, sinTheta As Double
-  ' pi = 4.0 * Atn(1)
-   myAlpha = alpha * pi / 180
+
+   myAlpha = alpha * myPi / 180
   cosAlpha = Cos(myAlpha)
   sinAlpha = Sin(myAlpha)
   cosAlpha1 = 1 - cosAlpha
@@ -264,42 +262,42 @@ Sub initRotate(ByVal a1 As Double, ByVal a2 As Double, ByVal a3 As Double, ByVal
   'Debug.Print ("RRRRRRRRRRRR>>>>>>>>>>>>>>>>>>>>>>>>> myAlpha = " & myAlpha & ", alpha = " & alpha & ", rho = " & rho)
   If rho = 0 Then
     theta = 0
-    cosphi = 1
+    cosPhi = 1
     sinPhi = 0
   Else
     If v1 = 0 Then
       If v2 >= 0 Then
-        theta = 0.5 * pi
+        theta = 0.5 * myPi
   '      Debug.Print ("RRRRRRRRRRRR>>>>>>>>>>>>>>>>>>>>>>>>> V1==0 and v2>0")
       Else
-        theta = 1.5 * pi
+        theta = 1.5 * myPi
     '    Debug.Print ("RRRRRRRRRRRR>>>>>>>>>>>>>>>>>>>>>>>>> V1==0 and v2<=0")
       End If
     Else
       theta = Atn(v2 / v1)
       If (v1 < 0) Then
-        theta = theta + pi
+        theta = theta + myPi
       End If
     '     Debug.Print ("RRRRRRRRRRRR>>>>>>>>>>>>>>>>>>>>>>>>> v1 = " & v1 & ", " & "v2 = " & v2 & ", theta = " & theta)
     End If
-    cosphi = v3 / rho
-    sinPhi = Sqr(1 - cosphi * cosphi)
-    ' cosPhi = cos(phi) sinPhi = sin(phi)
+    cosPhi = v3 / rho
+    sinPhi = Sqr(1 - cosPhi * cosPhi)
+    ' cosPhi = cos(Phi) sinPhi = sin(Phi)
   End If
   cosTheta = Cos(theta)
   sinTheta = Sin(theta)
-  cosPhi2 = cosphi * cosphi
+  cosPhi2 = cosPhi * cosPhi
   sinPhi2 = 1 - cosPhi2
   cosTheta2 = cosTheta * cosTheta
   sinTheta2 = 1 - cosTheta2
   r11 = (cosAlpha * cosPhi2 + sinPhi2) * cosTheta2 + cosAlpha * sinTheta2
-  r12 = sinAlpha * cosphi + cosAlpha1 * sinPhi2 * cosTheta * sinTheta
-  r13 = sinPhi * (cosphi * cosTheta * cosAlpha1 - sinAlpha * sinTheta)
-  r21 = sinPhi2 * cosTheta * sinTheta * cosAlpha1 - sinAlpha * cosphi
+  r12 = sinAlpha * cosPhi + cosAlpha1 * sinPhi2 * cosTheta * sinTheta
+  r13 = sinPhi * (cosPhi * cosTheta * cosAlpha1 - sinAlpha * sinTheta)
+  r21 = sinPhi2 * cosTheta * sinTheta * cosAlpha1 - sinAlpha * cosPhi
   r22 = sinTheta2 * (cosAlpha * cosPhi2 + sinPhi2) + cosAlpha * cosTheta2
-  r23 = sinPhi * (cosphi * sinTheta * cosAlpha1 + sinAlpha * cosTheta)
-  r31 = sinPhi * (cosphi * cosTheta * cosAlpha1 + sinAlpha * sinTheta)
-  r32 = sinPhi * (cosphi * sinTheta * cosAlpha1 - sinAlpha * cosTheta)
+  r23 = sinPhi * (cosPhi * sinTheta * cosAlpha1 + sinAlpha * cosTheta)
+  r31 = sinPhi * (cosPhi * cosTheta * cosAlpha1 + sinAlpha * sinTheta)
+  r32 = sinPhi * (cosPhi * sinTheta * cosAlpha1 - sinAlpha * cosTheta)
   r33 = cosAlpha * sinPhi2 + cosPhi2
   r41 = a1 - a1 * r11 - a2 * r21 - a3 * r31
   r42 = a2 - a1 * r12 - a2 * r22 - a3 * r32
@@ -336,7 +334,6 @@ fff = FreeFile()
   For i = 0 To wNext - 1
     Print #fff, WaveFront(i)
   Next i
-  print "Thats all folks"
   Close #fff
 End Sub
 
@@ -353,7 +350,6 @@ Sub writeOBJobject(Optional colorID As Integer)
   maxVertex = vNext
   maxFace = fNext
   'Debug.Print ("In writeOBJobject " & maxVertex & "vertices and faces = " & maxFace)
- ' WaveFront(wNext) = "o ent_" & format(objOffset, "000000")
   WaveFront(wNext) = "o ent_" & Format(objOffset, "000000")
   wNext = wNext + 1
   objOffset = objOffset + 1
@@ -400,7 +396,7 @@ Sub myCone(B() As String)
   x2 = CDbl(Trim(B(5)))
   y2 = CDbl(Trim(B(6)))
   z2 = CDbl(Trim(B(7)))
-  r = CDbl(global_radius) * 2.0
+  R = CDbl(global_radius) * 2.0
   N = CInt(global_steps)
   PPPL = UBound(B)
   If PPPL > 7 Then
@@ -417,11 +413,11 @@ Sub myCone(B() As String)
   End If
   If PPPL > 9 Then
     If Len(B(10)) > 0 Then
-      Phi = CDbl(Trim(B(10)))  ' optional overide of phi, orientation
-      'Debug.Print "overide phi = " & Phi
+      Phi = CDbl(Trim(B(10)))  ' optional overide of Phi, orientation
+      'Debug.Print "overide Phi = " & Phi
     End If
   End If
-  '#-myCone,C, x1,y1,z1, x2,y2,z2, <R>,<N>,<phi>
+  '#-myCone,C, x1,y1,z1, x2,y2,z2, <R>,<N>,<Phi>
   ' ttt = sqrt(-1)
     Dim xx(30) As Double
     Dim yy(30) As Double  ' dimension must match n
@@ -464,10 +460,10 @@ Sub myCone(B() As String)
     theta = 360 / N
     
     'First Face's Vertices ''''''''''''''''''''''''''''''''''''''
-    If Len(R1) > 0 Then r = R1 'optional overide of radius
-    xx(0) = x1 + rx * r
-    yy(0) = y1 + ry * r
-    zz(0) = z1 + rz * r
+    If Len(R1) > 0 Then R = R1 'optional overide of radius
+    xx(0) = x1 + rx * R
+    yy(0) = y1 + ry * R
+    zz(0) = z1 + rz * R
     If Phi <> 0 Then 'extra rotation for orientation
       myXX = xx(0)
       myYY = yy(0)
@@ -499,7 +495,7 @@ Sub myCone(B() As String)
   
     'save center of 2nd point as index 2n+1
     Vertices(vertCount) = x2 & " " & y2 & " " & z2
-    ' Debug.Print "In cone z2 = >" & z2 & "<"
+    'Debug.Print "In cone z2 = >" & z2 & "<"
     vertCount = vertCount + 1
 
 ''''''' FACES
@@ -556,8 +552,6 @@ Sub myCone(B() As String)
     fNext = faceCount
 End Sub
 
-
-
 Sub myCylinder(B() As String)
 ' #,C,x1,y1,z1, x2,y2,z2, R, N
   x1 = CDbl(Trim(B(2)))
@@ -566,7 +560,7 @@ Sub myCylinder(B() As String)
   x2 = CDbl(Trim(B(5)))
   y2 = CDbl(Trim(B(6)))
   z2 = CDbl(Trim(B(7)))
-  r = global_radius
+  R = global_radius
   N = CInt(global_steps)
   PPPL = UBound(B)
   If PPPL > 7 Then
@@ -585,8 +579,7 @@ Sub myCylinder(B() As String)
       'Debug.Print "overide N"
     End If
   End If
-  'm = Sheets("Cyl").Cells(2, 11) 'number of cylinders
-  ' ttt = sqrt(-1)
+
     Dim xx(30) As Double
     Dim yy(30) As Double  ' dimension must match n
     Dim zz(30) As Double
@@ -628,10 +621,10 @@ Sub myCylinder(B() As String)
     theta = 360 / N
     
     'First Face's Vertices ''''''''''''''''''''''''''''''''''''''
-    If Len(R1) > 0 Then r = R1 'optional overide of radius
-    xx(0) = x1 + rx * r
-    yy(0) = y1 + ry * r
-    zz(0) = z1 + rz * r
+    If Len(R1) > 0 Then R = R1 'optional overide of radius
+    xx(0) = x1 + rx * R
+    yy(0) = y1 + ry * R
+    zz(0) = z1 + rz * R
     Call initRotate(x1, y1, z1, aa, bb, cc, theta)
     For i = 1 To N - 1
       myXX = xx(i - 1)
@@ -648,10 +641,10 @@ Sub myCylinder(B() As String)
     Next i
     
     'Second Faces's Vertices '''''''''''''''''''''''''''''''''''''
-    If Len(R2) > 0 Then r = R2 'optional overide of radius
-    xx(0) = x2 + rx * r
-    yy(0) = y2 + ry * r
-    zz(0) = z2 + rz * r
+    If Len(R2) > 0 Then R = R2 'optional overide of radius
+    xx(0) = x2 + rx * R
+    yy(0) = y2 + ry * R
+    zz(0) = z2 + rz * R
     For i = 1 To N - 1
       myXX = xx(i - 1)
       myYY = yy(i - 1)
@@ -780,7 +773,7 @@ Sub myTorus(B() As String)
     End If
   End If
   '#-myTorus,C, Cx,Cy,Cz,ax,ay,az,R1,N1,<R2>,<N2>
-  ' ttt = sqrt(-1)
+
     Dim xx(30) As Double
     Dim yy(30) As Double  ' dimension must match n
     Dim zz(30) As Double
@@ -809,9 +802,9 @@ Sub myTorus(B() As String)
       ry = -1.0 * aa
       rz = 0.0
     End If
-    rx = cdbl(rx)
-    ry = cdbl(ry)
-    rz = cdbl(rz)
+    rx = CDbl(rx)
+    ry = CDbl(ry)
+    rz = CDbl(rz)
     ''''''''''''''''''''''''''''''''''' Unit Length
     myLen = Sqr(rx * rx + ry * ry + rz * rz)
     rx = rx / myLen
@@ -860,7 +853,7 @@ Sub myTorus(B() As String)
     
     '' Rotate Profile N1 times '''''''''''''''''''''''''''''''
     Call initRotate(Cx, Cy, Cz, ax, ay, az, theta1)
-    For j = CInt(1) To CInt(N1) - 1
+    For j = 1 To CInt(N1) - 1
       For i = 0 To N2 - 1
         myXX = xx(i)
         myYY = yy(i)
@@ -905,7 +898,7 @@ Sub myTorus(B() As String)
 
     Next j  ' end of loop through profiles
     For i = 0 To N2 - 2
-       v1 = (Cint(N1) - 1) * N2 + i
+       v1 = (CInt(N1) - 1) * N2 + i
        v2 = v1 + 1
        v3 = i + 1
        v4 = i
@@ -930,6 +923,11 @@ Sub myTorus(B() As String)
 '    myStr = myStr + "        : rx = " & rx & ", ry = " & ry & ", rz = " & rz & " check " & (R2 + R1) & chr(13)
 '    myStr = myStr + "        : Theta1 = " & theta1 & ", Theta2 = " & theta2 & chr(13)
 '    print myStr
+'    Debug.Print "in torus: center is (" & Cx & "," & Cy & "," & Cz & ") CL is (" & CLx & "," & CLy & "," & CLz & ")"
+'    Debug.Print "        : vertex is (" & px & "," & py & "," & pz & ") and AP is (" & APx & "," & APy & "," & APz & ")"
+'    Debug.Print "        : R1 = " & R1 & ", N1 = " & N1 & "  R2 = " & R2 & ", N2 = " & N2
+'    Debug.Print "        : rx = " & rx & ", ry = " & ry & ", rz = " & rz & " check " & (R2 + R1)
+'    Debug.Print "        : Theta1 = " & theta1 & ", Theta2 = " & theta2
     
 End Sub
 
@@ -971,8 +969,7 @@ Sub myArcC(B() As String)
       'Debug.Print "overide N2"
     End If
    End If
-  'm = Sheets("Cyl").Cells(2, 11) 'number of cylinders
-  ' ttt = sqrt(-1)
+
     Dim xx(30) As Double
     Dim yy(30) As Double  ' dimension must match n
     Dim zz(30) As Double
@@ -1130,8 +1127,9 @@ Sub myArcC(B() As String)
    ' Debug.Print "        : N1 = " & N1 & "; R2 = " & R2 & ", N2 = " & N2 & ";"
    ' Debug.Print "        : rx = " & rx & ", ry = " & ry & ", rz = " & rz & " check " & N1 * N2
    ' Debug.Print "        : Theta1 = " & theta1 & ", Theta2 = " & theta2
-    
 End Sub
+
+
 Sub myChord(B() As String)
 '#-myChord, C, Sx,Sy,Sz, Ex, Ey,Ez, ax,ay,az, H, N, <R1>, <N1>
   Dim Cx, Cy, Cz As Double ' center point
@@ -1172,8 +1170,6 @@ Sub myChord(B() As String)
     Dim aa, bb, cc As Double
     Dim rx, ry, rz As Double
     Dim myLen As Double
-    
-    'pi = 4# * Atn(1)
     
     If H = 0 Then
       B(8) = R1    'If H is zero, we have a straight line
@@ -1256,14 +1252,14 @@ Sub myChord(B() As String)
       alpha = 180
     Else
       alpha = 2 * Atn(x / Sqr(-x * x + 1))
-      alpha = alpha * 180 / pi
+      alpha = alpha * 180 / myPi
     End If
     If H > circleR Then
       alpha = 360 - alpha
       'Debug.Print "adding to alpha " & alpha
     End If
     
-   ' Debug.Print "in chord: center is (" & centerX & "," & centerY & "," & centerZ & ") and r = " & circleR
+   ' Debug.Print "in chord: center is (" & centerX & "," & centerY & "," & centerZ & ") and R = " & circleR
    ' Debug.Print "        : start is (" & Sx & "," & Sy & "," & Sz & ")  and N = " & N
    ' Debug.Print "        : MidChord is (" & chordMidX & "," & chordMidY & "," & chordMidZ & ") "
    ' Debug.Print "        : dirCenter is (" & dircenX & "," & dircenY & "," & dircenZ & ")  and H = " & H
@@ -1284,10 +1280,10 @@ Sub myChord(B() As String)
     B(11) = alpha
     B(12) = N
     If PPPL > 12 Then
-    B(13) = R2
+    B(13) = R1
     End If
     If PPPL > 13 Then
-    B(14) = N2
+    B(14) = N1
     End If
     Call myArcC(B())
 End Sub
@@ -1306,7 +1302,7 @@ Sub mySphere80(B() As String)
   FF2 = Array(15, 2, 13, 15, 14, 3, 16, 14, 17, 4, 18, 17, 19, 5, 20, 19, 21, 6, 22, 21, 24, 7, 23, 24, 26, 8, 25, 26, 28, 9, 27, 28, 30, 10, 29, 30, 32, 11, 31, 32, 33, 8, 26, 33, 34, 9, 28, 34, 35, 10, 30, 35, 36, 11, 32, 36, 37, 7, 24, 37, 39, 12, 38, 39, 38, 12, 40, 38, 40, 12, 41, 40, 41, 12, 42, 41, 42, 12, 39, 42)
   FF3 = Array(14, 13, 3, 13, 17, 16, 4, 16, 19, 18, 5, 18, 21, 20, 6, 20, 15, 22, 2, 22, 13, 23, 3, 23, 16, 25, 4, 25, 18, 27, 5, 27, 20, 29, 6, 29, 22, 31, 2, 31, 23, 26, 3, 26, 25, 28, 4, 28, 27, 30, 5, 30, 29, 32, 6, 32, 31, 24, 2, 24, 33, 38, 8, 38, 34, 40, 9, 40, 35, 41, 10, 41, 36, 42, 11, 42, 37, 39, 7, 39)
 
-    r = CDbl(Trim(B(5))) 'Radius of Sphere
+    R = CDbl(Trim(B(5))) 'Radius of Sphere
   xxx = CDbl(Trim(B(2)))
   yyy = CDbl(Trim(B(3)))
   zzz = CDbl(Trim(B(4)))
@@ -1315,7 +1311,7 @@ Sub mySphere80(B() As String)
   
   For j = 0 To 41
   
-    myStr = PPX(j) * r + xxx & " " & PPY(j) * r + yyy & " " & PPZ(j) * r + zzz
+    myStr = PPX(j) * R + xxx & " " & PPY(j) * R + yyy & " " & PPZ(j) * R + zzz
     Vertices(vNext) = myStr
     ' bug.Print myStr
     vNext = vNext + 1
@@ -1333,12 +1329,14 @@ Sub mySphere80(B() As String)
 End Sub
 
 
+
 Sub myHemisphere(B() As String)
 ' 5 | Color | Cx | Cy | Cz | Px | Py | Pz | Radius | Steps
   Dim Cx, Cy, Cz As Double ' center point
   Dim ax, ay, az As Double ' direction=axis of rotation
-  Dim R1, N1, R2, N2 As Double 'Radii and Steps
-  Dim theta, phi as Double
+  Dim R1, R2 As Double 'Radii and Steps
+  Dim N1, N2 as Integer
+  Dim theta, Phi As Double
   PPPL = UBound(B)  ' How many optional parameters are set? Subscript out of range errors otherwise
   Cx = CDbl(Trim(B(2)))
   Cy = CDbl(Trim(B(3)))
@@ -1347,7 +1345,7 @@ Sub myHemisphere(B() As String)
   ay = CDbl(Trim(B(6)))
   az = CDbl(Trim(B(7)))
   R1 = CDbl(Trim(B(8)))
-  stepsLat = CDbl(Trim(B(9)))
+  stepsLat = CInt(Trim(B(9)))
   R2 = global_radius
   N2 = global_steps
   If PPPL > 9 Then
@@ -1389,30 +1387,30 @@ Sub myHemisphere(B() As String)
       
 ''' get direction to point on first profile
            If Abs(aa) < 0.000001 And Abs(bb) < 0.000001 Then
-              rx = 0.0
+              rx = 0
               ry = cc
-              rz = -1.0 * bb
+              rz = -1 * bb
             Else
               rx = bb
-              ry = -1.0 * aa
-              rz = 0.0
+              ry = -1 * aa
+              rz = 0
             End If
 
      ''' normalize to unit length
         LLL = Sqr(rx*rx + ry*ry + rz*rz)
-        rx = rx/LLL
-        ry = ry/LLL
-        rz = rz/LLL
+        rx = rx / LLL
+        ry = ry / LLL
+        rz = rz / LLL
         
      ''' normalize to unit length
      ''' vector from base center to pole
-        LLL = Sqr(aa*aa + bb*bb + cc*cc)
-        aa = aa/LLL
-        bb = bb/LLL
-        cc = cc/LLL
+        'LLL = Sqr(aa*aa + bb*bb + cc*cc)
+        'aa = aa / LLL
+        'bb = bb / LLL            'DON'T Normalize This Vector
+        'cc = cc / LLL
       
-      phi = pi/(2*stepsLat)
-      theta = 360.0/N2
+      Phi = myPi / (2 * stepsLat)
+      theta = 360/N2
       
       ''' set first point on fist profile
         xx(0) = Cx + rx * R1
@@ -1438,13 +1436,15 @@ Sub myHemisphere(B() As String)
       
     '''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
     For myLat = 2 To stepsLat - 1
-      R = R1*cos((myLat-1)*phi)  ' jReduce each lattitude radius
-      x2 = Cx + aa *sin((myLat-1)*phi)
-      y2 = Cy + bb *sin((myLat-1)*phi)
-      z2 = Cz + cc *sin((myLat-1)*phi)
-      xx(0) = x2 + rx*R
-      yy(0) = y2 + ry*R
-      zz(0) = z2 + rz*R
+      R = R1 * Cos((myLat - 1) * Phi) ' jReduce each lattitude radius
+     ' print R
+      x2 = Cx + aa * Sin((myLat - 1) * Phi)
+      y2 = Cy + bb * Sin((myLat - 1) * Phi)
+      z2 = Cz + cc * Sin((myLat - 1) * Phi)
+      'print x2, y2, z2
+      xx(0) = x2 + rx * R
+      yy(0) = y2 + ry * R
+      zz(0) = z2 + rz * R
       Vertices(vNext) = xx(0) & " " & yy(0) & " " & zz(0)
       vNext = vNext + 1
       ''' rotation stays the same: same axis same angle  
@@ -1506,28 +1506,29 @@ Sub myHemisphere(B() As String)
   Next j ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
   'Polar region
     
-    v3 = vNext - 1
-    For i = N2 to 2 step -1
-      v1 = (stepsLat -1)*(N2-1) + i +1
-      v2 = v1 - 1
+    v1 = vNext - 1
+    v4 = v1 - N2
+    For i = 1 to N2 - 1
+      v2 = i - 1 + v4
+      v3 = v2 + 1
       Faces(fNext) = v1 & " " & v2 & " " & v3
       fNext = fNext + 1
     Next i
-    v1 = v2
-    v2 = v3 - 1
+    v2 = v3
+    v3 = v4
     Faces(fNext) = v1 & " " & v2 & " " & v3
     fNext = fNext + 1
 
 End Sub
 
 sub doit
- call Main
+call SceneDraft
 end sub
 
 Sub myExtrusion(B() As String)
   'R = Sheets("Scene").Cells(2, 9) ' Radius of hemisphere base
   'N = Sheets("Scene").Cells(m, 6) ' number of polygon vertices
-         r = global_radius
+         R = global_radius
     deltaX = CDbl(Trim(B(2)))
     deltaY = CDbl(Trim(B(3)))
     deltaZ = CDbl(Trim(B(4)))
@@ -1545,7 +1546,7 @@ Sub myExtrusion(B() As String)
     xx(i - 1) = CDbl(Trim(B(6 + 3 * (i - 1))))
     yy(i - 1) = CDbl(Trim(B(7 + 3 * (i - 1))))
     zz(i - 1) = CDbl(Trim(B(8 + 3 * (i - 1))))
-    Debug.Print i, xx(i), yy(i), zz(i)
+    ' Debug.Print i, xx(i), yy(i), zz(i)
   Next i
   
   'assume bottom face is listed pointing into center of volume
@@ -1565,9 +1566,9 @@ Sub myExtrusion(B() As String)
     nn = Int(N / 2)
     
     ''given face
-    Debug.Print nn
+    ' Debug.Print nn
     If N Mod 2 = 0 Then
-     Debug.Print "even N"
+     'Debug.Print "even N"
      For i = 1 To nn
       v1 = i - 1
       v2 = v1 + 1
@@ -1598,9 +1599,9 @@ Sub myExtrusion(B() As String)
     End If
 
 ''extruded face
-    Debug.Print nn
+    'Debug.Print nn
     If N Mod 2 = 0 Then
-     Debug.Print "even N"
+     'Debug.Print "even N"
      For i = 1 To nn
       v1 = N + i - 1
       v2 = v1 + 1

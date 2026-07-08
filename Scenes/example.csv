@@ -1,0 +1,56 @@
+﻿,,Delimiter
+5, Header Lines. Scene parsing starts at +1
+0.05, Global Radius = Pencil Width
+6, Global Steps = smoothness
+Shape,color,{parameters}
+0  "Shape 0 gets ignored, so this can comment out a line"
+-1,Cone Color, x1,y1,z1, x2,y2,z2, <R>,<N>
+-1    Pt1 is base, Pt2 is point, <R> overrides global radius
+-1    <N> overrides global steps
+-2,Cylinder Color,x1,y1,z1, x2,y2,z2, <R1>,<R2>, <N>
+-2    Pt1 is start, Pt2 is End, <R1> radius at Pt1 defaults to globl
+-2    <R2> radius at Pt2 defaults to Global, <N> override global steps
+-3,Torus Color, Cx,Cy,Cz,ax,ay,az,R1,N1,<R2>,<N2>
+-3    Center of Torus, axis of rotation, R1 is radius of tube
+-3    N1 is number of steps around tube, <R2> overrides global radius
+-3    <N2> overrides global steps
+-4, Arc Color, Cx,Cy,Cz, ax,ay,az, Sx,Sy,Sz, alpha,N1, <R2>, <N2>
+-5, Arc from Chord Color, C, Sx,Sy,Sz, Ex, Ey,Ez, ax,ay,az, H, N, <R1>, <N1>
+-6, Sphere80 Color, Cx,Cy,Cz,R
+-7, Hemisphere Color, Cx,Cy,Cz, Px,Py,Pz, R, N
+-8, Extrusion Color, dx,dy,dz, N, 1x,1y,1z, 2x,2y,2z, ... Nx,Ny,Nz
+0
+0
+-1 red cone
+-1,Cone Color, x1,y1,z1, x2,y2,z2, <R>,<N>
+1,1, 0,0,0, 0,0,20, 5
+0
+-2 green cylinder
+-2,Cylinder Color,x1,y1,z1, x2,y2,z2, <R1>,<R2>, <N>
+2,2, 10,0,0, 10,50,0, .8
+0
+-3 blue torus
+-3,Torus Color, Cx,Cy,Cz,ax,ay,az,R1,N1,<R2>,<N2>
+3,3, 30,0,0, 1,0,0, 20, 30, 1
+0
+-4 orange arc by end and angle
+-4, Arc Color, Cx,Cy,Cz, ax,ay,az, Sx,Sy,Sz, alpha,N1, <R2>, <N2>
+4,4, 50,0,0, 1,0,0, 50,20,0, 90, 15,1
+0
+-5 black arc by chord
+-5, Arc from Chord Color, C, Sx,Sy,Sz, Ex, Ey,Ez, ax,ay,az, H, N, <R1>, <N1>
+5,0, 50,0,20, 50,-20,0, 1,0,0, 7.07, 15, 1
+0
+-6 cyan point
+-6, Sphere80 Color, Cx,Cy,Cz,R
+6,6, 60,0,0, 3
+0
+-7 purple hemisphere
+-7, Hemisphere Color, Cx,Cy,Cz, Px,Py,Pz, R, N
+7,7, 80.0,0.0,0.0, 80,10,0, 10, 6
+0
+-8 magenta extrusion
+-8, Extrusion Color, dx,dy,dz, N, 1x,1y,1z, 2x,2y,2z, ... Nx,Ny,Nz
+8,8, 1,0,0, 4, 100,10,10, 100,-10,10, 100,-10,-10, 100,10,-10
+0
+

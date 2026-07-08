@@ -1,0 +1,1 @@
+python C:\Users\Schulerrw\ONEDRI~1\Documents\3DOBJE~1\SceneDraft\Python\sceneDraft.py %1 %2
