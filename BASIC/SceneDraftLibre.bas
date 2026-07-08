@@ -51,7 +51,7 @@
   '''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
   Dim theSceneFile As String 'Path to SceneDesciptionFile
   '''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
-  Dim myPi as Double
+  Dim myPi As Double
 
   'Adaptation of Leen Ammeraal's Cable.cpp tool to work in VBA Excel
   ' Rotation matrix is made global
@@ -90,9 +90,10 @@ Dim a As String
 Dim B() As String
 Dim S As String
 Dim objColor As Integer
-Dim myMsg as String
-Dim HL as integer
-ff = FreeFile()
+Dim myMsg As String
+Dim HL As Integer
+FF = FreeFile()
+
   '''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
   '  full path to 3dmodel.model  temporary file
   theOBJfile = "b:\exampleLibre.obj"
@@ -101,6 +102,7 @@ ff = FreeFile()
   '''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
   'myPi = 4.0*atn(1.0)
   myPi = pi
+  
 vNext = 0
 fNext = 0
 wNext = 0
@@ -113,25 +115,25 @@ xmlObjectID = 1
 Call writeOBJheader
 
 'Open "b:\scene.csv" For Input As #1
-Open theSceneFile For Input As ff
+Open theSceneFile For Input As FF
 
 'myMsg = ""
-Line Input #ff, a
+Line Input #FF, a
 B = Split(a, "D") ' get the character before Delimiter
 c = Right(B(0), 1)
 'Debug.Print "Delimiter is '" & c & "'"
 'myMsg = myMsg + "Delimiter is '" & c & "'"
-Line Input #ff, a
+Line Input #FF, a
 B = Split(a, c)
 HL = B(0)
 'Debug.Print "There are " & HL & " header lines"
 'myMsg = myMsg + "There are " & HL & " header lines\n"
-Line Input #ff, a
+Line Input #FF, a
 B = Split(a, c)
 global_radius = B(0)
 'Debug.Print "The global_radius is:" & global_radius
 'myMsg = myMsg + "The global_radius is:" & global_radius
-Line Input #ff, a
+Line Input #FF, a
 B = Split(a, c)
 global_steps = B(0)
 'Debug.Print "global_steps:" & global_steps
@@ -139,7 +141,7 @@ global_steps = B(0)
 'print myMsg
 
 For i = 5 To HL
-  Line Input #ff, a 'skip to end of header
+  Line Input #FF, a 'skip to end of header
 Next i
 
 ' RWS B is an array of STRINGs.
@@ -147,7 +149,7 @@ Next i
 '     Test, test, test
 bail = False
 Do Until EOF(1) Or bail = True
-Line Input #ff, a
+Line Input #FF, a
 objColor = 0
 If Len(a) > 0 Then  'stop parsing at blank line
 B = Split(a, c)
@@ -314,13 +316,13 @@ Sub rotate(ByRef x As Variant, ByRef y As Variant, ByRef z As Variant)
   End Sub
 
 Sub printRotate()
-  Debug.Print ("================================================")
-  Debug.Print ("[")
-  Debug.Print (" " & r11 & "," & r12 & "," & r13)
-  Debug.Print (" " & r21 & "," & r22 & "," & r23)
-  Debug.Print (" " & r31 & "," & r32 & "," & r33)
-  Debug.Print (" " & r41 & "," & r42 & "," & r43)
-  Debug.Print ("]")
+  'Debug.Print ("================================================")
+  'Debug.Print ("[")
+  'Debug.Print (" " & r11 & "," & r12 & "," & r13)
+  'Debug.Print (" " & r21 & "," & r22 & "," & r23)
+  'Debug.Print (" " & r31 & "," & r32 & "," & r33)
+  'Debug.Print (" " & r41 & "," & r42 & "," & r43)
+  'Debug.Print ("]")
 End Sub
 
 Sub dumpOBJfile()
@@ -388,7 +390,7 @@ End Sub
 
 
 Sub myCone(B() As String)
-  Dim r, Phi as Double
+  Dim r, Phi  As Double
   Phi = 0.0# 'optional rotation about axis to align base-points
   x1 = CDbl(Trim(B(2))) 
   y1 = CDbl(Trim(B(3))) 
@@ -469,9 +471,9 @@ Sub myCone(B() As String)
       myYY = yy(0)
       myZZ = zz(0)
       Call initRotate(x1, y1, z1, aa, bb, cc, Phi)
-      Debug.Print "Phi fix: " & Phi, myXX, myYY, myZZ
+      'Debug.Print "Phi fix: " & Phi, myXX, myYY, myZZ
       Call rotate(myXX, myYY, myZZ)
-      Debug.Print "Phi fixed           : " & Phi, myXX, myYY, myZZ
+      'Debug.Print "Phi fixed           : " & Phi, myXX, myYY, myZZ
       xx(0) = myXX
       yy(0) = myYY
       zz(0) = myZZ
@@ -739,7 +741,7 @@ Sub myTorus(B() As String)
   Dim Cx, Cy, Cz As Double ' center point
   Dim ax, ay, az As Double ' direction=axis of rotation
   Dim R1,R2 As Double 'Radii and Steps 1 is torus 2 is tube
-  Dim i,j, N1, N2 as Integer
+  Dim i,j, N1, N2 As Integer
   PPPL = UBound(B)
   Cx = CDbl(Trim(B(2)))
   Cy = CDbl(Trim(B(3)))
@@ -758,7 +760,7 @@ Sub myTorus(B() As String)
   End If
   If PPPL > 8 Then
     If Len(B(9)) > 0 Then
-      N1 = CDbl(Trim(B(9))) ' optional overide of N, number of steps
+      N1 = CInt(Trim(B(9))) ' optional overide of N, number of steps
     End If
   End If
   If PPPL > 9 Then
@@ -768,8 +770,8 @@ Sub myTorus(B() As String)
   End If
   If PPPL > 10 Then
     If Len(B(11)) > 0 Then
-      N2 = CDbl(Trim(B(11))) ' optional overide of N, number of steps
-      Debug.Print "overide N"
+      N2 = CInt(Trim(B(11))) ' optional overide of N, number of steps
+      'Debug.Print "overide N"
     End If
   End If
   '#-myTorus,C, Cx,Cy,Cz,ax,ay,az,R1,N1,<R2>,<N2>
@@ -1158,7 +1160,7 @@ Sub myChord(B() As String)
   If PPPL > 13 Then
     If Len(B(14)) > 0 Then
       N1 = CInt(Trim(B(14))) ' optional overide of N, number of steps
-      Debug.Print "overide N1"
+      'Debug.Print "overide N1"
     End If
   End If
 
@@ -1335,7 +1337,7 @@ Sub myHemisphere(B() As String)
   Dim Cx, Cy, Cz As Double ' center point
   Dim ax, ay, az As Double ' direction=axis of rotation
   Dim R1, R2 As Double 'Radii and Steps
-  Dim N1, N2 as Integer
+  Dim N1, N2 As Integer
   Dim theta, Phi As Double
   PPPL = UBound(B)  ' How many optional parameters are set? Subscript out of range errors otherwise
   Cx = CDbl(Trim(B(2)))
@@ -1382,7 +1384,7 @@ Sub myHemisphere(B() As String)
       'd = a * xC1 + b * yC1 + c * zC1
       
  ''' save center of first profile at index zero
-    Vertices(vNext) = Cx & " " & " " & Cy & " " & Cz
+    Vertices(vNext) = Cx & " " & Cy & " " & Cz
     vNext = vNext + 1
       
 ''' get direction to point on first profile
@@ -1508,7 +1510,7 @@ Sub myHemisphere(B() As String)
     
     v1 = vNext - 1
     v4 = v1 - N2
-    For i = 1 to N2 - 1
+    For i = 1 To N2 - 1
       v2 = i - 1 + v4
       v3 = v2 + 1
       Faces(fNext) = v1 & " " & v2 & " " & v3
@@ -1521,9 +1523,6 @@ Sub myHemisphere(B() As String)
 
 End Sub
 
-sub doit
-call SceneDraft
-end sub
 
 Sub myExtrusion(B() As String)
   'R = Sheets("Scene").Cells(2, 9) ' Radius of hemisphere base
@@ -1582,9 +1581,9 @@ Sub myExtrusion(B() As String)
       End If
       Next i
     Else
-      Debug.Print "odd N " & nn
+      'Debug.Print "odd N " & nn
       For i = 1 To nn
-      Debug.Print "         i = " & i
+      'Debug.Print "         i = " & i
       v1 = i - 1
       v2 = v1 + 1
       v3 = N - i - 1
@@ -1615,7 +1614,7 @@ Sub myExtrusion(B() As String)
        End If
       Next i
     Else
-      Debug.Print "odd N"
+      'Debug.Print "odd N"
       For i = 1 To nn
       v1 = N + i - 1
       v2 = v1 + 1

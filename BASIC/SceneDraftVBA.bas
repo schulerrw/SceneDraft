@@ -46,8 +46,6 @@ Attribute VB_Name = "SceneDraft"
   ' GLOBALS
   '''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
   ' Set path to a legal place to write on your disk & modify the CopyIt.bat file'
-  Dim theTempFile As String                                                     '
-  '''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
   Dim theOBJfile As String 'Wavefron *.obj format file.
   '''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
   Dim theSceneFile As String 'Path to SceneDesciptionFile
@@ -98,7 +96,6 @@ FF = FreeFile()
 
   '''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
   '  full path to 3dmodel.model  temporary file
-  theTempFile = "b:\3dmodel.model"
   theOBJfile = "b:\exampleVBA.obj"
   theSceneFile = "b:\example.csv"
   '  use SUBST B: <your path> at the cmd prompt--see the help for SUBST
@@ -471,9 +468,9 @@ Sub myCone(B() As String)
       myYY = yy(0)
       myZZ = zz(0)
       Call initRotate(x1, y1, z1, aa, bb, cc, Phi)
-      Debug.Print "Phi fix: " & Phi, myXX, myYY, myZZ
+      'Debug.Print "Phi fix: " & Phi, myXX, myYY, myZZ
       Call rotate(myXX, myYY, myZZ)
-      Debug.Print "Phi fixed           : " & Phi, myXX, myYY, myZZ
+      'Debug.Print "Phi fixed           : " & Phi, myXX, myYY, myZZ
       xx(0) = myXX
       yy(0) = myYY
       zz(0) = myZZ
@@ -759,7 +756,6 @@ Sub myTorus(B() As String)
   End If
   If PPPL > 8 Then
     If Len(B(9)) > 0 Then
-      Debug.Print B(9)
       N1 = CInt(Trim(B(9))) ' optional overide of N, number of steps
     End If
   End If
@@ -770,8 +766,8 @@ Sub myTorus(B() As String)
   End If
   If PPPL > 10 Then
     If Len(B(11)) > 0 Then
-      N2 = CDbl(Trim(B(11))) ' optional overide of N, number of steps
-      Debug.Print "overide N"
+      N2 = CInt(Trim(B(11))) ' optional overide of N, number of steps
+      'Debug.Print "overide N"
     End If
   End If
   '#-myTorus,C, Cx,Cy,Cz,ax,ay,az,R1,N1,<R2>,<N2>
@@ -1333,7 +1329,8 @@ Sub myHemisphere(B() As String)
 ' 5 | Color | Cx | Cy | Cz | Px | Py | Pz | Radius | Steps
   Dim Cx, Cy, Cz As Double ' center point
   Dim ax, ay, az As Double ' direction=axis of rotation
-  Dim R1, N1, R2, N2 As Double 'Radii and Steps
+  Dim R1, R2 As Double 'Radii and Steps
+  Dim N1, N2 As Integer
   Dim theta, Phi As Double
   PPPL = UBound(B)  ' How many optional parameters are set? Subscript out of range errors otherwise
   Cx = CDbl(Trim(B(2)))
@@ -1343,7 +1340,7 @@ Sub myHemisphere(B() As String)
   ay = CDbl(Trim(B(6)))
   az = CDbl(Trim(B(7)))
   R1 = CDbl(Trim(B(8)))
-  stepsLat = CDbl(Trim(B(9)))
+  stepsLat = CInt(Trim(B(9)))
   R2 = global_radius
   N2 = global_steps
   If PPPL > 9 Then
@@ -1380,7 +1377,7 @@ Sub myHemisphere(B() As String)
       'd = a * xC1 + b * yC1 + c * zC1
       
  ''' save center of first profile at index zero
-    Vertices(vNext) = Cx & " " & " " & Cy & " " & Cz
+    Vertices(vNext) = Cx & " " & Cy & " " & Cz
     vNext = vNext + 1
       
 ''' get direction to point on first profile
@@ -1402,11 +1399,11 @@ Sub myHemisphere(B() As String)
         
      ''' normalize to unit length
      ''' vector from base center to pole
-        LLL = Sqr(aa * aa + bb * bb + cc * cc)
-        aa = aa / LLL
-        bb = bb / LLL
-        cc = cc / LLL
-
+        'LLL = Sqr(aa*aa + bb*bb + cc*cc)
+        'aa = aa / LLL
+        'bb = bb / LLL            'DON'T Normalize This Vector
+        'cc = cc / LLL
+      
       Phi = myPi / (2 * stepsLat)
       theta = 360 / N2
       
@@ -1435,9 +1432,11 @@ Sub myHemisphere(B() As String)
     '''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
     For myLat = 2 To stepsLat - 1
       r = R1 * Cos((myLat - 1) * Phi) ' jReduce each lattitude radius
+     ' print R
       x2 = Cx + aa * Sin((myLat - 1) * Phi)
       y2 = Cy + bb * Sin((myLat - 1) * Phi)
       z2 = Cz + cc * Sin((myLat - 1) * Phi)
+      'print x2, y2, z2
       xx(0) = x2 + rx * r
       yy(0) = y2 + ry * r
       zz(0) = z2 + rz * r
@@ -1459,9 +1458,6 @@ Sub myHemisphere(B() As String)
     ''' save pole at index 2n+1
     Vertices(vNext) = ax & " " & ay & " " & az
     vNext = vNext + 1
-
-   
-
      ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
   '
     'Equitorial base
@@ -1502,15 +1498,16 @@ Sub myHemisphere(B() As String)
   Next j ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
   'Polar region
     
-    v3 = vNext - 1
-    For i = N2 To 2 Step -1
-      v1 = (stepsLat - 1) * (N2 - 1) + i + 1
-      v2 = v1 - 1
+    v1 = vNext - 1
+    v4 = v1 - N2
+    For i = 1 To N2 - 1
+      v2 = i - 1 + v4
+      v3 = v2 + 1
       Faces(fNext) = v1 & " " & v2 & " " & v3
       fNext = fNext + 1
     Next i
-    v1 = v2
-    v2 = v3 - 1
+    v2 = v3
+    v3 = v4
     Faces(fNext) = v1 & " " & v2 & " " & v3
     fNext = fNext + 1
 
@@ -1559,9 +1556,9 @@ Sub myExtrusion(B() As String)
     nn = Int(N / 2)
     
     ''given face
-    Debug.Print nn
+    ' Debug.Print nn
     If N Mod 2 = 0 Then
-     Debug.Print "even N"
+    ' Debug.Print "even N"
      For i = 1 To nn
       v1 = i - 1
       v2 = v1 + 1
@@ -1575,9 +1572,9 @@ Sub myExtrusion(B() As String)
       End If
       Next i
     Else
-      Debug.Print "odd N " & nn
+     ' Debug.Print "odd N " & nn
       For i = 1 To nn
-      Debug.Print "         i = " & i
+      'Debug.Print "         i = " & i
       v1 = i - 1
       v2 = v1 + 1
       v3 = N - i - 1
@@ -1592,9 +1589,9 @@ Sub myExtrusion(B() As String)
     End If
 
 ''extruded face
-    Debug.Print nn
+    'Debug.Print nn
     If N Mod 2 = 0 Then
-     Debug.Print "even N"
+     'Debug.Print "even N"
      For i = 1 To nn
       v1 = N + i - 1
       v2 = v1 + 1
@@ -1608,7 +1605,7 @@ Sub myExtrusion(B() As String)
        End If
       Next i
     Else
-      Debug.Print "odd N"
+      ' Debug.Print "odd N"
       For i = 1 To nn
       v1 = N + i - 1
       v2 = v1 + 1
