@@ -143,7 +143,7 @@ if __name__ == "__main__":
     methods.
     '''
     flag = 1 # lowers to zero upon parsing a blank line
-    for s in scene[headerLength + 1:]: #skip header lines
+    for s in scene[headerLength:]: #skip header lines
         if flag == 0:
             print(f'Stop Parsing, a blank line was found.')
             break

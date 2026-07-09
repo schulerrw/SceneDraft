@@ -17,5 +17,5 @@ rem        if %2 has a value, the python uses sceneDraft.mtl
 rem        otherwise python uses <scene family name>.mtl
 rem
 rem 
-rem python C:\Users\Schulerrw\3DOBJE~1\RWSbookJune26\SceneDraft\Python\sceneDraft.py %1 %2
-python <your path to sceneDraft.py>\sceneDraft.py %1 %2
+rem python <your path to sceneDraft.py>\sceneDraft.py %1 %2
+python C:\Users\Schulerrw\ONEDRI~1\Documents\3DOBJE~1\SceneDraft\Python\sceneDraft.py %1 %2
