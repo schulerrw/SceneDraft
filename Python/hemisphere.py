@@ -25,8 +25,8 @@ import transform3d                                                 #
 | Px                                  | 
 | Py  pole                            |
 | Pz                                  |
-| R   base radius                     |
 | N   number of latitude layers       |
+|<N2> number of longitudes            |
 +-------------------------------------+
 | __init__(self, line, gRad, gStep)   |
 | describe(self)                      |
@@ -67,15 +67,28 @@ class hemisphere:
             self.Px = float(line[5])
             self.Py = float(line[6])
             self.Pz = float(line[7])
-            self.BaseRadius = float(line[8])
-            self.Steps = int(line[9])
+            self.Steps = int(line[8])
         except Exception:
             print("Error parsing {line} in hemisphere.__init__()")
             self.color = 0
+        try:
+            self.N2 = int(line[9])
+            if self.N2 < 0:
+                self.N2 = globalSteps
+        except Exception:
+            self.N2 = globalSteps
+
+        ''' compute vector Head - Tail to get Radius of Dome'''
+        # Defines plane of first profile
+        a = self.Px - self.Cx #xB - xA
+        b = self.Py - self.Cy #yB - yA
+        c = self.Pz - self.Cz #zB - zA
+        myLen = math.sqrt(a**2 + b**2 + c**2)
+        self.BaseRadius = myLen
 
     def describe(self):
         print(f'hemisphere from ({self.Cx},{self.Cy},{self.Cz}) to ({self.Px}, {self.Py}, {self.Pz})')
-        print(f'         R1 = {self.BaseRadius} and N = {self.Steps} latitudes')
+        print(f'         R1 = {self.BaseRadius}, N = {self.Steps} latitudes and there are {self.N2} longitudes.')
         print(f'         globalRadius = {self.globalRadius}  and  globalSteps = {self.globalSteps}')
     
     def vertices(self):
@@ -96,13 +109,15 @@ class hemisphere:
         # if self.n1 > 0:
         #     N = self.n1
         
-        theta = 360 / N
+        theta = 360 / self.N2
     
         ''' compute vector Head - Tail'''
         # Defines plane of first profile
         a = self.Px - self.Cx #xB - xA
         b = self.Py - self.Cy #yB - yA
         c = self.Pz - self.Cz #zB - zA
+        myLen = math.sqrt(a**2 + b**2 + c**2)
+        self.BaseRadius = myLen
         
         ''' save center of first profile at index zero '''
         verts.append([self.Cx, self.Cy, self.Cz])
@@ -145,7 +160,7 @@ class hemisphere:
 
         ''' generate rest of points on first profile'''
         T = transform3d.transform3d(self.Cx, self.Cy, self.Cz, a, b, c, theta)
-        for i in range(1, N):
+        for i in range(1, self.N2):
             [xx, yy, zz] = T.rotate(xx, yy, zz)
             verts.append([xx, yy, zz])
 
@@ -160,14 +175,14 @@ class hemisphere:
             yy = y2 + ry * R
             zz = z2 + rz * R
             verts.append([xx, yy, zz])
-            for i in range(1,N):
+            for i in range(1,self.N2):
                 [xx, yy, zz] = T.rotate(xx, yy, zz)
                 verts.append([xx, yy, zz])
 
   
         ''' save pole at index 2n+1'''
         verts.append([self.Px, self.Py, self.Pz])
-        self.noLattitutes = int((len(verts)-2)/self.globalSteps)
+        self.noLattitutes = int((len(verts)-2)/self.N2)
         return verts
     
     def faces(self):
@@ -179,7 +194,7 @@ class hemisphere:
         '''
         faces = []
         # '2n + 2 vertices per cylinder
-        N = self.globalSteps
+        N = self.N2
         
         m = self.noLattitutes
         print(f'in faces, there are {m} profiles to connect')
