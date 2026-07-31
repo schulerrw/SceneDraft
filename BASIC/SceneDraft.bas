@@ -96,7 +96,7 @@ FF = FreeFile()
 
   '''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
   '  full path to 3dmodel.model  temporary file
-  theOBJfile = "b:\hemi2.obj"
+  theOBJfile = "b:\hemi3.obj"
   theSceneFile = "b:\hemi.csv"
   '  use SUBST B: <your path> at the cmd prompt--see the help for SUBST
   '''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
@@ -342,7 +342,7 @@ Sub writeOBJheader()
   wNext = wNext + 1
 End Sub
 
-Sub writeOBJobject(Optional colorID As Integer = 0)
+Sub writeOBJobject(Optional colorID As Integer)
   'NOTE: objOffset 'used to track output row on Sheets("OBJ") and
   '      objVertexCount 'used to offset vertexIDs
   '      are GLOBAL and must be managed in the calling environment

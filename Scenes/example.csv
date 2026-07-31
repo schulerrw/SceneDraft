@@ -17,7 +17,7 @@ Shape,color,{parameters}
 -4, Arc Color, Cx,Cy,Cz, ax,ay,az, Sx,Sy,Sz, alpha,N1, <R2>, <N2>
 -5, Arc from Chord Color, C, Sx,Sy,Sz, Ex, Ey,Ez, ax,ay,az, H, N, <R1>, <N1>
 -6, Sphere80 Color, Cx,Cy,Cz,R
--7, Hemisphere Color, Cx,Cy,Cz, Px,Py,Pz, R, N
+-7, Hemisphere Color, Cx,Cy,Cz, Px,Py,Pz, NLAT, <NLON>
 -8, Extrusion Color, dx,dy,dz, N, 1x,1y,1z, 2x,2y,2z, ... Nx,Ny,Nz
 0
 0
@@ -46,8 +46,8 @@ Shape,color,{parameters}
 6,6, 60,0,0, 3
 0
 -7 purple hemisphere
--7, Hemisphere Color, Cx,Cy,Cz, Px,Py,Pz, R, N
-7,7, 80.0,0.0,0.0, 80,10,0, 10, 6
+-7, Hemisphere Color, Cx,Cy,Cz, Px,Py,Pz, N
+7,7, 80.0,0.0,0.0, 80,10,0, 6
 0
 -8 magenta extrusion
 -8, Extrusion Color, dx,dy,dz, N, 1x,1y,1z, 2x,2y,2z, ... Nx,Ny,Nz
