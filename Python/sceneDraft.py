@@ -157,6 +157,7 @@ if __name__ == "__main__":
             if entityID == 1:
                 E = cone.cone(line, globalRadius, globalSteps)    
                 entityList.append(E)
+                E.describe()
             elif entityID == 2:
                 E = cylinder.cylinder(line, globalRadius, globalSteps)
                 entityList.append(E)

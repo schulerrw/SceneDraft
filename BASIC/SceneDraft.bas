@@ -321,7 +321,35 @@ Sub rotate(ByRef x As Variant, ByRef y As Variant, ByRef z As Variant)
   Debug.Print (" " & r41 & "," & r42 & "," & r43)
   Debug.Print ("]")
 End Sub
-
+  Sub orth(ByVal aa As Double, ByVal bb As Double, ByVal cc As Double, ByRef rx As Variant, ByRef ry As Variant, ByRef rz As Variant)
+  If Abs(aa) < 0.000001 And Abs(bb) < 0.000001 Then
+      rx = 0
+      ry = cc
+      rz = -1 * bb
+    Else
+      rx = bb
+      ry = -1 * aa
+      rz = 0
+    End If
+  End Sub
+  Sub test()
+  Dim rx, ry, rz As Double
+  a = 1
+  b = 1
+  c = 1
+  rx = 0
+  ry = 0
+  rz = 0
+  Call orth(a, b, c, rx, ry, rz)
+  Call unit(rx, ry, rz, aa, bb, cc)
+  Debug.Print a, b, c, rx, ry, rz, aa, bb, cc
+  End Sub
+  Sub unit(ByVal a As Double, ByVal b As Double, ByVal c As Double, ByRef aa As Variant, ByRef bb As Variant, ByRef cc As Variant)
+  L = Sqr(a * a + b * b + c * c)
+  aa = a / L
+  bb = b / L
+  cc = c / L
+  End Sub
 
 Sub dumpOBJfile()
   fff = FreeFile()

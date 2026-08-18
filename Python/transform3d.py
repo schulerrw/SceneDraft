@@ -84,6 +84,17 @@ class transform3d:
         mz = x * self.r13 + y * self.r23 + z * self.r33 + self.r43
         return [mx, my, mz] 
 
+def orth(a,b,c):
+    if abs(a) < 0.000001 and abs(b) < 0.000001:
+            rx = 0
+            ry = c
+            rz = -1 * b
+    else:
+        rx = b
+        ry = -1 * a
+        rz = 0
+    return [rx, ry, rz]
+
 
 if __name__ == "__main__":
     print("transform3d")

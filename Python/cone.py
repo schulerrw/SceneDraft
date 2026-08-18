@@ -75,9 +75,8 @@ class cone:
             if self.r1 <= 0:
                 self.r1 = -2
         except Exception as e:
-            print(e)
+            # print(e)
             self.r1 = -5
-
         try:
             self.n1 = int(line[9])
             if self.n1 < 3:

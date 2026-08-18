@@ -130,14 +130,15 @@ class cylinder:
 
     
         ''' get direction to point on first profile'''
-        if abs(a) < 0.000001 and abs(b) < 0.000001:
-            rx = 0
-            ry = c
-            rz = -1 * b
-        else:
-            rx = b
-            ry = -1 * a
-            rz = 0
+        # if abs(a) < 0.000001 and abs(b) < 0.000001:
+        #     rx = 0
+        #     ry = c
+        #     rz = -1 * b
+        # else:
+        #     rx = b
+        #     ry = -1 * a
+        #     rz = 0
+        [rx, ry, rz] = transform3d.orth(a,b,c)
 
     
         ''' normalize to unit length'''
