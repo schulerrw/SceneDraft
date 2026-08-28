@@ -322,6 +322,7 @@ Sub rotate(ByRef x As Variant, ByRef y As Variant, ByRef z As Variant)
   Debug.Print ("]")
 End Sub
   Sub orth(ByVal aa As Double, ByVal bb As Double, ByVal cc As Double, ByRef rx As Variant, ByRef ry As Variant, ByRef rz As Variant)
+  'return (ByRef) <rx,ry,rz> that is unit length and orthogonal to <aa,bb,cc> 
   If Abs(aa) < 0.000001 And Abs(bb) < 0.000001 Then
       rx = 0
       ry = cc
@@ -331,23 +332,33 @@ End Sub
       ry = -1 * aa
       rz = 0
     End If
+    lll = rx*rx+ry*ry+rz*rz
+    lll = sqr(lll)
+    rx = rx/lll
+    ry = ry/lll
+    rz = rz/lll
   End Sub
   Sub test()
   Dim rx, ry, rz As Double
   a = 1
-  b = 1
+  B = 1
   c = 1
   rx = 0
   ry = 0
   rz = 0
-  Call orth(a, b, c, rx, ry, rz)
+  Call orth(a, B, c, rx, ry, rz)
   Call unit(rx, ry, rz, aa, bb, cc)
-  Debug.Print a, b, c, rx, ry, rz, aa, bb, cc
+  Debug.Print a, B, c, rx, ry, rz, aa, bb, cc, L
+  Call unit(rx, ry, rz, rx, ry, rz, myLen)
+  Debug.Print rx, ry, rz, myLen
   End Sub
-  Sub unit(ByVal a As Double, ByVal b As Double, ByVal c As Double, ByRef aa As Variant, ByRef bb As Variant, ByRef cc As Variant)
-  L = Sqr(a * a + b * b + c * c)
+  Sub unit(ByVal a As Double, ByVal B As Double, ByVal c As Double, ByRef aa As Variant, ByRef bb As Variant, ByRef cc As Variant, Optional ByRef L As Variant)
+  ' Wise people learn from other's mistakes
+  ' It is much more clear to leave the original four lines in the source than to replace with a call to unit.
+  ' In many contexts one wants unit(x,y,z,x,y,z) and in other contexts one also wants the length of the oringina <x,y,z>
+  L = Sqr(a * a + B * B + c * c)
   aa = a / L
-  bb = b / L
+  bb = B / L
   cc = c / L
   End Sub
 
@@ -468,21 +479,9 @@ Sub myCone(B() As String)
     
 
     ''''''''''''''''''''''  Orthogonal Vector
-    If Abs(aa) < 0.000001 And Abs(bb) < 0.000001 Then
-      rx = 0
-      ry = cc
-      rz = -1 * bb
-    Else
-      rx = bb
-      ry = -1 * aa
-      rz = 0
-    End If
+    Call orth(aa, bb, cc, rx, ry, rz)
     ''''''''''''''''''''''''''''''''''' Unit Length
-    myLen = Sqr(rx * rx + ry * ry + rz * rz)
-    rx = rx / myLen
-    ry = ry / myLen
-    rz = rz / myLen
-    
+  
     ' stride in degrees around circle
     theta = 360 / N
     
@@ -628,21 +627,18 @@ Sub myCylinder(B() As String)
     
 
     ''''''''''''''''''''''  Orthogonal Vector
-    If Abs(aa) < 0.000001 And Abs(bb) < 0.000001 Then
-      rx = 0
-      ry = cc
-      rz = -1 * bb
-    Else
-      rx = bb
-      ry = -1 * aa
-      rz = 0
-    End If
+    'If Abs(aa) < 0.000001 And Abs(bb) < 0.000001 Then
+    '  rx = 0
+    '  ry = cc
+    '  rz = -1 * bb
+    'Else
+    '  rx = bb
+    '  ry = -1 * aa
+    '  rz = 0
+    'End If
+    Call orth(aa, bb, cc, rx, ry, rz)
     ''''''''''''''''''''''''''''''''''' Unit Length
-    myLen = Sqr(rx * rx + ry * ry + rz * rz)
-    rx = rx / myLen
-    ry = ry / myLen
-    rz = rz / myLen
-    
+  
     ' stride in degrees around circle
     theta = 360 / N
     
@@ -819,23 +815,6 @@ Sub myTorus(B() As String)
     
 
     ''''''''''''''''''''''  Orthogonal Vector
-    If Abs(aa) < 0.000001 And Abs(bb) < 0.000001 Then
-      rx = 0#
-      ry = cc
-      rz = -1# * bb
-    Else
-      rx = bb
-      ry = -1# * aa
-      rz = 0#
-    End If
-    rx = CDbl(rx)
-    ry = CDbl(ry)
-    rz = CDbl(rz)
-    ''''''''''''''''''''''''''''''''''' Unit Length
-    myLen = Sqr(rx * rx + ry * ry + rz * rz)
-    rx = rx / myLen
-    ry = ry / myLen
-    rz = rz / myLen
     
     ' stride in degrees around cenerline circle
     theta1 = 360# / N1
@@ -1327,10 +1306,15 @@ Sub mySphere80(B() As String)
   FF2 = Array(15, 2, 13, 15, 14, 3, 16, 14, 17, 4, 18, 17, 19, 5, 20, 19, 21, 6, 22, 21, 24, 7, 23, 24, 26, 8, 25, 26, 28, 9, 27, 28, 30, 10, 29, 30, 32, 11, 31, 32, 33, 8, 26, 33, 34, 9, 28, 34, 35, 10, 30, 35, 36, 11, 32, 36, 37, 7, 24, 37, 39, 12, 38, 39, 38, 12, 40, 38, 40, 12, 41, 40, 41, 12, 42, 41, 42, 12, 39, 42)
   FF3 = Array(14, 13, 3, 13, 17, 16, 4, 16, 19, 18, 5, 18, 21, 20, 6, 20, 15, 22, 2, 22, 13, 23, 3, 23, 16, 25, 4, 25, 18, 27, 5, 27, 20, 29, 6, 29, 22, 31, 2, 31, 23, 26, 3, 26, 25, 28, 4, 28, 27, 30, 5, 30, 29, 32, 6, 32, 31, 24, 2, 24, 33, 38, 8, 38, 34, 40, 9, 40, 35, 41, 10, 41, 36, 42, 11, 42, 37, 39, 7, 39)
 
-    r = CDbl(Trim(B(5))) 'Radius of Sphere
+  'r = CDbl(Trim(B(5))) 'Radius of Sphere
   xxx = CDbl(Trim(B(2)))
   yyy = CDbl(Trim(B(3)))
   zzz = CDbl(Trim(B(4)))
+  If PPPL > 4 Then
+    If Len(B(5)) > 0 Then
+      r = CDbl(Trim(B(5))) 'optional overide of R for 1rst cap
+    End If
+  End If
   vNext = 0
   fNext = 0
 
@@ -1406,29 +1390,9 @@ Sub myHemisphere(B() As String)
     vNext = vNext + 1
       
 ''' get direction to point on first profile
-           If Abs(aa) < 0.000001 And Abs(bb) < 0.000001 Then
-              rx = 0
-              ry = cc
-              rz = -1 * bb
-            Else
-              rx = bb
-              ry = -1 * aa
-              rz = 0
-            End If
+           Call orth(aa, bb, cc, rx, ry, rz)
 
-     ''' normalize to unit length
-        LLL = Sqr(rx * rx + ry * ry + rz * rz)
-        rx = rx / LLL
-        ry = ry / LLL
-        rz = rz / LLL
-        
-     ''' normalize to unit length
-     ''' vector from base center to pole
-        'LLL = Sqr(aa*aa + bb*bb + cc*cc)
-        'aa = aa / LLL
-        'bb = bb / LLL            'DON'T Normalize This Vector
-        'cc = cc / LLL
-      
+     
       Phi = myPi / (2 * stepsLat)
       theta = 360 / N2
       
@@ -1667,3 +1631,4 @@ Sub myExtrusion(B() As String)
       Faces(fNext) = v4 & " " & v2 & " " & v3
       fNext = fNext + 1
 End Sub
+

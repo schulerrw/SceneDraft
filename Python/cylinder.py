@@ -141,11 +141,11 @@ class cylinder:
         [rx, ry, rz] = transform3d.orth(a,b,c)
 
     
-        ''' normalize to unit length'''
-        myLen = math.sqrt(rx * rx + ry * ry + rz * rz)
-        rx = rx / myLen
-        ry = ry / myLen
-        rz = rz / myLen
+        # ''' normalize to unit length'''
+        # myLen = math.sqrt(rx * rx + ry * ry + rz * rz)
+        # rx = rx / myLen
+        # ry = ry / myLen
+        # rz = rz / myLen
         
 
         ''' set first point on first profile'''

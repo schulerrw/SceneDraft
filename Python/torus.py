@@ -101,19 +101,21 @@ class torus:
         a = self.r1 * self.Ax - self.Cx
         b = self.r1 * self.Ay - self.Cy
         c = self.r1 * self.Az - self.Cz
-        if abs(a) < 0.000001 and abs(b) < 0.000001:
-            rx = 0
-            ry = c
-            rz = -1 * b
-        else:
-            rx = b
-            ry = -1 * a
-            rz = 0
+        # if abs(a) < 0.000001 and abs(b) < 0.000001:
+        #     rx = 0
+        #     ry = c
+        #     rz = -1 * b
+        # else:
+        #     rx = b
+        #     ry = -1 * a
+        #     rz = 0
         
-        xxx = math.sqrt(rx * rx + ry * ry + rz * rz) # denom
-        rx = rx / xxx
-        ry = ry / xxx
-        rz = rz / xxx
+        # xxx = math.sqrt(rx * rx + ry * ry + rz * rz) # denom
+        # rx = rx / xxx
+        # ry = ry / xxx
+        # rz = rz / xxx
+        [rx,ry,rz] = transform3d.orth(a,b,c)
+        
         xx = self.r1*rx+self.Cx
         yy = self.r1*ry+self.Cy
         zz = self.r1*rz + self.Cz

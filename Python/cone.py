@@ -126,22 +126,23 @@ class cone:
         ''' save center of first profile at index zero '''
         verts.append([self.Bx, self.By, self.Bz])
 
-        ''' get direction to point on first profile'''
-        if abs(a) < 0.000001 and abs(b) < 0.000001:
-            rx = 0
-            ry = c
-            rz = -1 * b
-        else:
-            rx = b
-            ry = -1 * a
-            rz = 0
+        # ''' get direction to point on first profile'''
+        # if abs(a) < 0.000001 and abs(b) < 0.000001:
+        #     rx = 0
+        #     ry = c
+        #     rz = -1 * b
+        # else:
+        #     rx = b
+        #     ry = -1 * a
+        #     rz = 0
 
     
-        ''' normalize to unit length'''
-        myLen = math.sqrt(rx * rx + ry * ry + rz * rz)
-        rx = rx / myLen
-        ry = ry / myLen
-        rz = rz / myLen
+        # ''' normalize to unit length'''
+        # myLen = math.sqrt(rx * rx + ry * ry + rz * rz)
+        # rx = rx / myLen
+        # ry = ry / myLen
+        # rz = rz / myLen
+        [rx, ry, rz] = transform3d.orth(a,b,c)
         
 
         ''' set first point on base profile'''

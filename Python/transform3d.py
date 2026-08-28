@@ -93,6 +93,10 @@ def orth(a,b,c):
         rx = b
         ry = -1 * a
         rz = 0
+    lll = math.sqrt(rx*rx + ry*ry + rz*rz)
+    rx = rx/lll
+    ry = ry/lll
+    rz = rz/lll
     return [rx, ry, rz]
 
 

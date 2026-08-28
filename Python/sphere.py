@@ -60,13 +60,20 @@ class sphere:
             self.Cx = float(line[2])
             self.Cy = float(line[3])
             self.Cz = float(line[4])
-            self.R = float(line[5])
+            # self.R = float(line[5])
         except Exception:
             print("Error parsing {line} in sphere.__init__()")
             self.color = 0
             self.Cx = self.Cy = self.Cz = 0.0
             self.R = 1.0
             # no options on line
+        try:
+            self.R = float(line[5])
+            if self.r1 <= 0:
+                self.r1 = globalRadius
+        except Exception as e:
+            # print(e)
+            self.r1 = globalRadius
 
     def describe(self):
         print(f'sphere with center ({self.Cx},{self.Cy},{self.Cz}) and Radius {self.R}.')
