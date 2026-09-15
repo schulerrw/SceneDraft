@@ -434,7 +434,7 @@ Sub myCone(B() As String)
   x2 = CDbl(Trim(B(5)))
   y2 = CDbl(Trim(B(6)))
   z2 = CDbl(Trim(B(7)))
-  r = CDbl(global_radius) * 2#
+  R1 = CDbl(global_radius) * 2#
   N = CInt(global_steps)
   PPPL = UBound(B)
   If PPPL > 7 Then
@@ -518,63 +518,44 @@ Sub myCone(B() As String)
       vertCount = vertCount + 1
     Next i
     
-  
     'save center of 2nd point as index 2n+1
     Vertices(vertCount) = x2 & " " & y2 & " " & z2
-    'Debug.Print "In cone z2 = >" & z2 & "<"
     vertCount = vertCount + 1
 
 ''''''' FACES
   vNext = vertCount ' update global pointer
-  '
-
-   faceCount = 0
+    faceCount = 0
     vertCount = 0
-    '2n + 2 vertices per cylinder
-
-    'first end cap
-
-    'Sheets("Faces").Cells(faceCount, 1) = faceCount - 1
-    v1 = N + j * (2 * N + 2)
-    v2 = 1 + j * (2 * N + 2)
-    v3 = 0 + j * (2 * N + 2)
+  
+    'Base Polygon
+    v1 = N 
+    v2 = 1 
+    v3 = 0 
     Faces(faceCount) = v1 & " " & v2 & " " & v3
         faceCount = faceCount + 1
         
     For i = 1 To N - 1
-      v1 = i + j * (2 * N + 2)
-      v2 = i + 1 + j * (2 * N + 2)
-      v3 = 0 + j * (2 * N + 2)
+      v1 = i 
+      v2 = i + 1 
+      v3 = 0 
       Faces(faceCount) = v1 & " " & v2 & " " & v3
         faceCount = faceCount + 1
     Next i
     
- 'point
-    v1 = N + j * (2 * N + 2)
-    v2 = 1 + j * (2 * N + 2)
-    v3 = N + 1 + j * (2 * N + 2)
+    v1 = N 
+    v2 = 1 
+    v3 = N + 1
       Faces(faceCount) = v1 & " " & v2 & " " & v3
         faceCount = faceCount + 1
   
     For i = 1 To N - 1
-    v1 = i + j * (2 * N + 2)
-    v2 = i + 1 + j * (2 * N + 2)
-    v3 = N + 1 + j * (2 * N + 2)
+    v1 = i 
+    v2 = i + 1 
+    v3 = N + 1 
       Faces(faceCount) = v1 & " " & v2 & " " & v3
         faceCount = faceCount + 1
     Next i
-  ' Next j
-      'For i = 0 To vNext - 1
-           'ebug.Print "v " & Vertices(i)
-     'ext i
-     For i = 0 To faceCount - 1
-       FF = Faces(i)
-       GG = Split(FF, " ")
-       
-       
-       '   Debug.Print "f " & GG(0) + 1 & " " & GG(1) + 1 & " " & GG(2) + 1
-     Next i
-         Faces(faceCount) = ""
+    Faces(faceCount) = ""
     fNext = faceCount
 End Sub
 
