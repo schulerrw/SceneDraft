@@ -93,29 +93,10 @@ class torus:
         if self.n2 < 0:
             self.n2 = globalSteps
 
-        xxx = math.sqrt(self.Ax*self.Ax + self.Ay*self.Ay + self.Az*self.Az)
-        self.Ax = self.Ax/xxx
-        self.Ay = self.Ay/xxx
-        self.Az = self.Az/xxx
+        # compute orthogonal to rotation axis direction
+        [rx,ry,rz] = transform3d.orth(self.Ax, self.Ay, self.Az)
 
-        a = self.r1 * self.Ax - self.Cx
-        b = self.r1 * self.Ay - self.Cy
-        c = self.r1 * self.Az - self.Cz
-        # if abs(a) < 0.000001 and abs(b) < 0.000001:
-        #     rx = 0
-        #     ry = c
-        #     rz = -1 * b
-        # else:
-        #     rx = b
-        #     ry = -1 * a
-        #     rz = 0
-        
-        # xxx = math.sqrt(rx * rx + ry * ry + rz * rz) # denom
-        # rx = rx / xxx
-        # ry = ry / xxx
-        # rz = rz / xxx
-        [rx,ry,rz] = transform3d.orth(a,b,c)
-        
+        # scale and offset from center point to point on tube center line
         xx = self.r1*rx+self.Cx
         yy = self.r1*ry+self.Cy
         zz = self.r1*rz + self.Cz
@@ -187,7 +168,7 @@ class torus:
         next face
         '''
         faces = []
-        # '2n + 2 vertices per cylinder
+        # 'n2 vertices per profile and n1 profiles
         N = int(self.n2)
         for i in range(0,self.n1-1):
             v1 = (i + 1)*N-1

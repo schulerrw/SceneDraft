@@ -179,9 +179,8 @@ class cone:
         N = int(self.globalSteps)
         if self.n1 > 0:
             N = self.n1   
+            
         '''first end cap'''
-        j = 0
-
         v3 = 0
         v2 = v3 + 1
         v1 = v3 + N

@@ -127,26 +127,9 @@ class cylinder:
         
         ''' save center of first profile at index zero '''
         verts.append([self.x1, self.y1, self.z1])
-
     
         ''' get direction to point on first profile'''
-        # if abs(a) < 0.000001 and abs(b) < 0.000001:
-        #     rx = 0
-        #     ry = c
-        #     rz = -1 * b
-        # else:
-        #     rx = b
-        #     ry = -1 * a
-        #     rz = 0
         [rx, ry, rz] = transform3d.orth(a,b,c)
-
-    
-        # ''' normalize to unit length'''
-        # myLen = math.sqrt(rx * rx + ry * ry + rz * rz)
-        # rx = rx / myLen
-        # ry = ry / myLen
-        # rz = rz / myLen
-        
 
         ''' set first point on first profile'''
         xx = self.x1 + rx * R
@@ -194,8 +177,7 @@ class cylinder:
         if self.n1 > 0:
             N = self.n1   
         '''first end cap'''
-        j = 0
-
+        
         v3 = 0
         v2 = v3 + 1
         v1 = v3 + N
@@ -208,8 +190,8 @@ class cylinder:
         
     
         ''' first side account for 'rolling over' index N'''
-        faces.append([j * (2 * N + 2) + 2 * N, 1 + j * (2 * N + 2), N + j * (2 * N + 2) ])
-        faces.append([j * (2 * N + 2) + 2 * N, j * (2 * N + 2) + 1 + N , 1 + j * (2 * N + 2)])
+        faces.append([2 * N, 1 , N ])
+        faces.append([2 * N,  1 + N , 1])
         
         ''' rest of sides'''
         for i in range(1, N):

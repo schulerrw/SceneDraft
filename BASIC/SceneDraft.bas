@@ -96,8 +96,8 @@ FF = FreeFile()
 
   '''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
   '  full path to 3dmodel.model  temporary file
-  theOBJfile = "b:\hemi3.obj"
-  theSceneFile = "b:\hemi.csv"
+  theOBJfile = "b:\Test8objects.obj"
+  theSceneFile = "b:\Test8objects.csv"
   '  use SUBST B: <your path> at the cmd prompt--see the help for SUBST
   '''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
   myPi = 4 * Atn(1)
@@ -560,7 +560,7 @@ Sub myCone(B() As String)
 End Sub
 
 Sub myCylinder(B() As String)
-' #,C,x1,y1,z1, x2,y2,z2, R, N
+' #,C,x1,y1,z1, x2,y2,z2, <R1>, <R2>, <N>
   x1 = CDbl(Trim(B(2)))
   y1 = CDbl(Trim(B(3)))
   z1 = CDbl(Trim(B(4)))
@@ -608,15 +608,6 @@ Sub myCylinder(B() As String)
     
 
     ''''''''''''''''''''''  Orthogonal Vector
-    'If Abs(aa) < 0.000001 And Abs(bb) < 0.000001 Then
-    '  rx = 0
-    '  ry = cc
-    '  rz = -1 * bb
-    'Else
-    '  rx = bb
-    '  ry = -1 * aa
-    '  rz = 0
-    'End If
     Call orth(aa, bb, cc, rx, ry, rz)
     ''''''''''''''''''''''''''''''''''' Unit Length
   
@@ -677,59 +668,55 @@ Sub myCylinder(B() As String)
     'first end cap
 
     'Sheets("Faces").Cells(faceCount, 1) = faceCount - 1
-    v1 = N + j * (2 * N + 2)
-    v2 = 1 + j * (2 * N + 2)
-    v3 = 0 + j * (2 * N + 2)
+    v1 = N 
+    v2 = 1 
+    v3 = 0 
     Faces(faceCount) = v1 & " " & v2 & " " & v3
         faceCount = faceCount + 1
         
     For i = 1 To N - 1
-      v1 = i + j * (2 * N + 2)
-      v2 = i + 1 + j * (2 * N + 2)
-      v3 = 0 + j * (2 * N + 2)
+      v1 = i 
+      v2 = i + 1 
+      v3 = 0 
       Faces(faceCount) = v1 & " " & v2 & " " & v3
         faceCount = faceCount + 1
     Next i
     
-      'Sheets("Faces").Cells(faceCount, 6) = "last"
-      'faceCount = faceCount + 1
-      'Sheets("Faces").Cells(faceCount, 1) = faceCount
-      v1 = j * (2 * N + 2) + 2 * N
-      v2 = 1 + j * (2 * N + 2)
-      v3 = N + j * (2 * N + 2)
+      v1 = 2 * N
+      v2 = 1 
+      v3 = N 
             Faces(faceCount) = v1 & " " & v2 & " " & v3
       faceCount = faceCount + 1
-      'Sheets("Faces").Cells(faceCount, 1) = faceCount
-      v1 = j * (2 * N + 2) + 2 * N
-      v2 = j * (2 * N + 2) + 1 + N
-      v3 = 1 + j * (2 * N + 2)
+      v1 = 2 * N
+      v2 = 1 + N
+      v3 = 1 
       Faces(faceCount) = v1 & " " & v2 & " " & v3
           faceCount = faceCount + 1
 
       For i = 1 To N - 1
-        v1 = i + j * (2 * N + 2)
-        v2 = j * (2 * N + 2) + i + N
-        v3 = j * (2 * N + 2) + i + N + 1
+        v1 = i 
+        v2 = i + N
+        v3 = i + N + 1
         Faces(faceCount) = v1 & " " & v2 & " " & v3
         faceCount = faceCount + 1
-        v1 = i + j * (2 * N + 2) + 1
-        v2 = i + j * (2 * N + 2)
-        v3 = j * (2 * N + 2) + i + N + 1
+        v1 = i + 1
+        v2 = i 
+        v3 = i + N + 1
         Faces(faceCount) = v1 & " " & v2 & " " & v3
         faceCount = faceCount + 1
       Next i
   'last end cap
     For i = N To 2 Step -1
-      v1 = N + i + j * (2 * N + 2)
-      v2 = N + i - 1 + j * (2 * N + 2)
-      v3 = 2 * N + 1 + j * (2 * N + 2)
+      v1 = N + i 
+      v2 = N + i - 1 
+      v3 = 2 * N + 1 
         Faces(faceCount) = v1 & " " & v2 & " " & v3
         faceCount = faceCount + 1
     Next i
 
-    v1 = N + 1 + j * (2 * N + 2)
-    v2 = 2 * N + j * (2 * N + 2)
-    v3 = 2 * N + 1 + j * (2 * N + 2)
+    v1 = N + 1 
+    v2 = 2 * N 
+    v3 = 2 * N + 1 
         Faces(faceCount) = v1 & " " & v2 & " " & v3
         faceCount = faceCount + 1
     Faces(faceCount) = ""
@@ -786,17 +773,10 @@ Sub myTorus(B() As String)
     Dim rx, ry, rz As Double
     Dim myLen As Double
     
-
-      
-      '''''''''''''''''''''''''' Vector direction of central axis
-      aa = ax
-      bb = ay
-      cc = az
-      'dd = a * xC1 + b * yC1 + c * zC1
-    
-
-    ''''''''''''''''''''''  Orthogonal Vector
-    
+  ''''''''''''''''''''''''''''  Orthogonal Vector
+    Call orth(ax, ay, az, rx, ry, rz)
+  ''''''''''''''''''''''''''''''''''' Unit Length 
+  
     ' stride in degrees around cenerline circle
     theta1 = 360# / N1
     theta2 = 360# / N2  'stride in degrees around profile ''pencil width
